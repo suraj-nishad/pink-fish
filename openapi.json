@@ -1,0 +1,1779 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "PlantOps Digital Twin Dashboard APIs",
+    "description": "Automotive plant digital twin APIs with IBM watsonx Orchestrate integration for energy analysis and predictive maintenance",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:8000",
+      "description": "Local Development Server"
+    },
+    {
+      "url": "https://pink-fish-production.up.railway.app",
+      "description": "Production Server"
+    }
+  ],
+  "paths": {
+    "/api/ml/anomaly-detection": {
+      "post": {
+        "tags": [
+          "Machine Learning"
+        ],
+        "summary": "Detect Anomalies Endpoint",
+        "description": "Detect anomalies in plant zone data using Isolation Forest ML model\nReturns anomaly predictions with confidence scores",
+        "operationId": "detect_anomalies_endpoint_api_ml_anomaly_detection_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnomalyDetectionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnomalyDetectionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ml/energy-forecast": {
+      "post": {
+        "tags": [
+          "Machine Learning"
+        ],
+        "summary": "Forecast Energy Endpoint",
+        "description": "Forecast energy consumption for a specific zone using trained ML model\nPredicts future energy usage, costs, and CO2 emissions",
+        "operationId": "forecast_energy_endpoint_api_ml_energy_forecast_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnergyForecastRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnergyForecastResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ml/predictive-maintenance": {
+      "get": {
+        "tags": [
+          "Machine Learning"
+        ],
+        "summary": "Predictive Maintenance Endpoint",
+        "description": "Analyze plant data to predict maintenance needs\nUses anomaly patterns to recommend preventive maintenance",
+        "operationId": "predictive_maintenance_endpoint_api_ml_predictive_maintenance_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PredictiveMaintenanceResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ml/model-info": {
+      "get": {
+        "tags": [
+          "Machine Learning"
+        ],
+        "summary": "Get Model Info",
+        "description": "Get information about loaded ML models",
+        "operationId": "get_model_info_api_ml_model_info_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/simulation/run": {
+      "post": {
+        "tags": [
+          "Digital Twin Simulation"
+        ],
+        "summary": "Run Simulation",
+        "description": "Run a digital twin simulation with specified modifications\nCompares baseline vs modified configuration",
+        "operationId": "run_simulation_api_simulation_run_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SimulationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimulationResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/simulation/what-if": {
+      "post": {
+        "tags": [
+          "Digital Twin Simulation"
+        ],
+        "summary": "What If Analysis",
+        "description": "Quick what-if analysis for a single parameter change\nPredicts impact without running full simulation",
+        "operationId": "what_if_analysis_api_simulation_what_if_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WhatIfScenario"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WhatIfResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/simulation/templates": {
+      "get": {
+        "tags": [
+          "Digital Twin Simulation"
+        ],
+        "summary": "Get Simulation Templates",
+        "description": "Get pre-configured simulation templates",
+        "operationId": "get_simulation_templates_api_simulation_templates_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/simulation/simulations": {
+      "get": {
+        "tags": [
+          "Digital Twin Simulation"
+        ],
+        "summary": "List Simulations",
+        "description": "List all stored simulations",
+        "operationId": "list_simulations_api_simulation_simulations_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/simulation/simulations/{simulation_id}": {
+      "get": {
+        "tags": [
+          "Digital Twin Simulation"
+        ],
+        "summary": "Get Simulation",
+        "description": "Get details of a specific simulation",
+        "operationId": "get_simulation_api_simulation_simulations__simulation_id__get",
+        "parameters": [
+          {
+            "name": "simulation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Simulation Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/simulation/zone-config": {
+      "get": {
+        "tags": [
+          "Digital Twin Simulation"
+        ],
+        "summary": "Get Zone Configurations",
+        "description": "Get base zone configurations",
+        "operationId": "get_zone_configurations_api_simulation_zone_config_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Root",
+        "description": "API health check",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Health Check",
+        "description": "Detailed health check",
+        "operationId": "health_check_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/zones/status": {
+      "get": {
+        "tags": [
+          "Plant Monitoring"
+        ],
+        "summary": "Get Zones Status",
+        "description": "Get current status of all manufacturing zones\nReturns real-time metrics, alerts, and overall plant health",
+        "operationId": "get_zones_status_api_zones_status_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlantStatusResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analyze-energy": {
+      "post": {
+        "tags": [
+          "AI Analysis"
+        ],
+        "summary": "Analyze Energy",
+        "description": "Trigger energy analysis workflow via IBM watsonx Orchestrate\nAnalyzes energy consumption patterns and provides AI-powered recommendations",
+        "operationId": "analyze_energy_api_analyze_energy_post",
+        "parameters": [
+          {
+            "name": "zones",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Zones to analyze (e.g., ['Paint Shop', 'Assembly'])",
+              "title": "Zones"
+            },
+            "description": "Zones to analyze (e.g., ['Paint Shop', 'Assembly'])"
+          },
+          {
+            "name": "timeframe",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Analysis timeframe",
+              "default": "last_24h",
+              "title": "Timeframe"
+            },
+            "description": "Analysis timeframe"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnergyAnalysisResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/chatops": {
+      "post": {
+        "tags": [
+          "ChatOps"
+        ],
+        "summary": "Chatops Query",
+        "description": "Handle natural language queries about plant status\nUses IBM watsonx Orchestrate for intelligent query processing",
+        "operationId": "chatops_query_api_chatops_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatOpsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatOpsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/maintenance/schedule": {
+      "post": {
+        "tags": [
+          "Maintenance"
+        ],
+        "summary": "Schedule Maintenance",
+        "description": "Create maintenance ticket\nThis endpoint can be called by watsonx Orchestrate workflows\nwhich can then trigger Jira/ServiceNow integrations",
+        "operationId": "schedule_maintenance_api_maintenance_schedule_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MaintenanceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MaintenanceResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/zones/{zone_id}/history": {
+      "get": {
+        "tags": [
+          "Plant Monitoring"
+        ],
+        "summary": "Get Zone History",
+        "description": "Get historical data for a specific zone\nUseful for trend analysis and visualization",
+        "operationId": "get_zone_history_api_zones__zone_id__history_get",
+        "parameters": [
+          {
+            "name": "zone_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Zone Id"
+            }
+          },
+          {
+            "name": "hours",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 168,
+              "minimum": 1,
+              "description": "Hours of history to retrieve",
+              "default": 24,
+              "title": "Hours"
+            },
+            "description": "Hours of history to retrieve"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/config": {
+      "get": {
+        "tags": [
+          "Configuration"
+        ],
+        "summary": "Get Config",
+        "description": "Get current analysis configuration thresholds",
+        "operationId": "get_config_api_config_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfigModel"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Configuration"
+        ],
+        "summary": "Update Config",
+        "description": "Update analysis configuration thresholds",
+        "operationId": "update_config_api_config_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfigModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfigModel"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/kpis": {
+      "get": {
+        "tags": [
+          "Analytics"
+        ],
+        "summary": "Get Plant Kpis",
+        "description": "Get plant-wide KPIs and metrics\nAggregated statistics for dashboard display",
+        "operationId": "get_plant_kpis_api_kpis_get",
+        "parameters": [
+          {
+            "name": "hours",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "description": "Hours to analyze",
+              "default": 24,
+              "title": "Hours"
+            },
+            "description": "Hours to analyze"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AlertModel": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "message",
+          "timestamp"
+        ],
+        "title": "AlertModel"
+      },
+      "AnomalyDetectionRequest": {
+        "properties": {
+          "zone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Zone",
+            "description": "Specific zone to analyze, or None for all zones"
+          },
+          "hours": {
+            "type": "integer",
+            "maximum": 168,
+            "minimum": 1,
+            "title": "Hours",
+            "description": "Hours of data to analyze",
+            "default": 24
+          }
+        },
+        "type": "object",
+        "title": "AnomalyDetectionRequest"
+      },
+      "AnomalyDetectionResponse": {
+        "properties": {
+          "total_records": {
+            "type": "integer",
+            "title": "Total Records"
+          },
+          "anomalies_detected": {
+            "type": "integer",
+            "title": "Anomalies Detected"
+          },
+          "anomaly_rate": {
+            "type": "number",
+            "title": "Anomaly Rate"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/AnomalyResult"
+            },
+            "type": "array",
+            "title": "Results"
+          },
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_records",
+          "anomalies_detected",
+          "anomaly_rate",
+          "results",
+          "timestamp"
+        ],
+        "title": "AnomalyDetectionResponse"
+      },
+      "AnomalyResult": {
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
+          },
+          "zone": {
+            "type": "string",
+            "title": "Zone"
+          },
+          "is_anomaly": {
+            "type": "boolean",
+            "title": "Is Anomaly"
+          },
+          "anomaly_score": {
+            "type": "number",
+            "title": "Anomaly Score"
+          },
+          "confidence": {
+            "type": "number",
+            "title": "Confidence"
+          },
+          "metrics": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Metrics"
+          }
+        },
+        "type": "object",
+        "required": [
+          "timestamp",
+          "zone",
+          "is_anomaly",
+          "anomaly_score",
+          "confidence",
+          "metrics"
+        ],
+        "title": "AnomalyResult"
+      },
+      "ChatOpsRequest": {
+        "properties": {
+          "query": {
+            "type": "string",
+            "title": "Query"
+          },
+          "user": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User",
+            "default": "operator"
+          }
+        },
+        "type": "object",
+        "required": [
+          "query"
+        ],
+        "title": "ChatOpsRequest"
+      },
+      "ChatOpsResponse": {
+        "properties": {
+          "query": {
+            "type": "string",
+            "title": "Query"
+          },
+          "response": {
+            "type": "string",
+            "title": "Response"
+          },
+          "related_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Related Actions"
+          },
+          "confidence": {
+            "type": "number",
+            "title": "Confidence"
+          }
+        },
+        "type": "object",
+        "required": [
+          "query",
+          "response",
+          "related_actions",
+          "confidence"
+        ],
+        "title": "ChatOpsResponse"
+      },
+      "ConfigModel": {
+        "properties": {
+          "ENERGY_THRESHOLD_AMBER": {
+            "type": "number",
+            "title": "Energy Threshold Amber"
+          },
+          "ENERGY_THRESHOLD_RED": {
+            "type": "number",
+            "title": "Energy Threshold Red"
+          },
+          "EFFICIENCY_THRESHOLD_AMBER": {
+            "type": "number",
+            "title": "Efficiency Threshold Amber"
+          },
+          "EFFICIENCY_THRESHOLD_RED": {
+            "type": "number",
+            "title": "Efficiency Threshold Red"
+          },
+          "CO2_FACTOR": {
+            "type": "number",
+            "title": "Co2 Factor"
+          },
+          "COST_PER_KWH": {
+            "type": "number",
+            "title": "Cost Per Kwh"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ENERGY_THRESHOLD_AMBER",
+          "ENERGY_THRESHOLD_RED",
+          "EFFICIENCY_THRESHOLD_AMBER",
+          "EFFICIENCY_THRESHOLD_RED",
+          "CO2_FACTOR",
+          "COST_PER_KWH"
+        ],
+        "title": "ConfigModel"
+      },
+      "EnergyAnalysisResponse": {
+        "properties": {
+          "hotspots": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Hotspots"
+          },
+          "recommendations": {
+            "items": {
+              "$ref": "#/components/schemas/RecommendationModel"
+            },
+            "type": "array",
+            "title": "Recommendations"
+          },
+          "impact": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Impact"
+          },
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "hotspots",
+          "recommendations",
+          "impact",
+          "timestamp"
+        ],
+        "title": "EnergyAnalysisResponse"
+      },
+      "EnergyForecastRequest": {
+        "properties": {
+          "zone": {
+            "type": "string",
+            "title": "Zone",
+            "description": "Zone to forecast"
+          },
+          "hours_ahead": {
+            "type": "integer",
+            "maximum": 168,
+            "minimum": 1,
+            "title": "Hours Ahead",
+            "description": "Hours to forecast",
+            "default": 24
+          },
+          "current_temp": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Temp",
+            "description": "Current temperature"
+          },
+          "current_efficiency": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Efficiency",
+            "description": "Current efficiency"
+          }
+        },
+        "type": "object",
+        "required": [
+          "zone"
+        ],
+        "title": "EnergyForecastRequest"
+      },
+      "EnergyForecastResponse": {
+        "properties": {
+          "zone": {
+            "type": "string",
+            "title": "Zone"
+          },
+          "forecast_hours": {
+            "type": "integer",
+            "title": "Forecast Hours"
+          },
+          "forecast": {
+            "items": {
+              "$ref": "#/components/schemas/ForecastPoint"
+            },
+            "type": "array",
+            "title": "Forecast"
+          },
+          "total_predicted_energy": {
+            "type": "number",
+            "title": "Total Predicted Energy"
+          },
+          "total_predicted_cost": {
+            "type": "number",
+            "title": "Total Predicted Cost"
+          },
+          "total_predicted_co2": {
+            "type": "number",
+            "title": "Total Predicted Co2"
+          },
+          "confidence_level": {
+            "type": "string",
+            "title": "Confidence Level"
+          },
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "zone",
+          "forecast_hours",
+          "forecast",
+          "total_predicted_energy",
+          "total_predicted_cost",
+          "total_predicted_co2",
+          "confidence_level",
+          "timestamp"
+        ],
+        "title": "EnergyForecastResponse"
+      },
+      "ForecastPoint": {
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
+          },
+          "hour": {
+            "type": "integer",
+            "title": "Hour"
+          },
+          "predicted_energy_kwh": {
+            "type": "number",
+            "title": "Predicted Energy Kwh"
+          },
+          "predicted_cost_usd": {
+            "type": "number",
+            "title": "Predicted Cost Usd"
+          },
+          "predicted_co2_kg": {
+            "type": "number",
+            "title": "Predicted Co2 Kg"
+          }
+        },
+        "type": "object",
+        "required": [
+          "timestamp",
+          "hour",
+          "predicted_energy_kwh",
+          "predicted_cost_usd",
+          "predicted_co2_kg"
+        ],
+        "title": "ForecastPoint"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "MaintenanceRecommendation": {
+        "properties": {
+          "zone": {
+            "type": "string",
+            "title": "Zone"
+          },
+          "priority": {
+            "type": "string",
+            "title": "Priority"
+          },
+          "anomaly_count": {
+            "type": "integer",
+            "title": "Anomaly Count"
+          },
+          "issue": {
+            "type": "string",
+            "title": "Issue"
+          },
+          "recommended_action": {
+            "type": "string",
+            "title": "Recommended Action"
+          },
+          "current_avg_energy": {
+            "type": "number",
+            "title": "Current Avg Energy"
+          },
+          "current_avg_efficiency": {
+            "type": "number",
+            "title": "Current Avg Efficiency"
+          },
+          "estimated_downtime_hours": {
+            "type": "integer",
+            "title": "Estimated Downtime Hours"
+          }
+        },
+        "type": "object",
+        "required": [
+          "zone",
+          "priority",
+          "anomaly_count",
+          "issue",
+          "recommended_action",
+          "current_avg_energy",
+          "current_avg_efficiency",
+          "estimated_downtime_hours"
+        ],
+        "title": "MaintenanceRecommendation"
+      },
+      "MaintenanceRequest": {
+        "properties": {
+          "zone": {
+            "type": "string",
+            "title": "Zone"
+          },
+          "issue": {
+            "type": "string",
+            "title": "Issue"
+          },
+          "priority": {
+            "type": "string",
+            "title": "Priority"
+          }
+        },
+        "type": "object",
+        "required": [
+          "zone",
+          "issue",
+          "priority"
+        ],
+        "title": "MaintenanceRequest"
+      },
+      "MaintenanceResponse": {
+        "properties": {
+          "ticket_id": {
+            "type": "string",
+            "title": "Ticket Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "assigned_to": {
+            "type": "string",
+            "title": "Assigned To"
+          },
+          "due_date": {
+            "type": "string",
+            "title": "Due Date"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticket_id",
+          "status",
+          "assigned_to",
+          "due_date"
+        ],
+        "title": "MaintenanceResponse"
+      },
+      "PlantStatusResponse": {
+        "properties": {
+          "zones": {
+            "items": {
+              "$ref": "#/components/schemas/ZoneStatusModel"
+            },
+            "type": "array",
+            "title": "Zones"
+          },
+          "last_updated": {
+            "type": "string",
+            "title": "Last Updated"
+          },
+          "plant_status": {
+            "type": "string",
+            "title": "Plant Status",
+            "default": "operational"
+          },
+          "total_zones": {
+            "type": "integer",
+            "title": "Total Zones"
+          },
+          "zones_normal": {
+            "type": "integer",
+            "title": "Zones Normal"
+          },
+          "zones_warning": {
+            "type": "integer",
+            "title": "Zones Warning"
+          },
+          "zones_critical": {
+            "type": "integer",
+            "title": "Zones Critical"
+          }
+        },
+        "type": "object",
+        "required": [
+          "zones",
+          "last_updated",
+          "total_zones",
+          "zones_normal",
+          "zones_warning",
+          "zones_critical"
+        ],
+        "title": "PlantStatusResponse"
+      },
+      "PredictiveMaintenanceResponse": {
+        "properties": {
+          "recommendations": {
+            "items": {
+              "$ref": "#/components/schemas/MaintenanceRecommendation"
+            },
+            "type": "array",
+            "title": "Recommendations"
+          },
+          "total_zones_needing_maintenance": {
+            "type": "integer",
+            "title": "Total Zones Needing Maintenance"
+          },
+          "high_priority_count": {
+            "type": "integer",
+            "title": "High Priority Count"
+          },
+          "estimated_total_downtime": {
+            "type": "integer",
+            "title": "Estimated Total Downtime"
+          },
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "recommendations",
+          "total_zones_needing_maintenance",
+          "high_priority_count",
+          "estimated_total_downtime",
+          "timestamp"
+        ],
+        "title": "PredictiveMaintenanceResponse"
+      },
+      "ProductionLine": {
+        "properties": {
+          "line_id": {
+            "type": "string",
+            "title": "Line Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "energy_multiplier": {
+            "type": "number",
+            "title": "Energy Multiplier",
+            "description": "Energy usage multiplier",
+            "default": 1
+          },
+          "efficiency_modifier": {
+            "type": "number",
+            "title": "Efficiency Modifier",
+            "description": "Efficiency percentage modifier",
+            "default": 0
+          },
+          "production_capacity": {
+            "type": "integer",
+            "title": "Production Capacity",
+            "description": "Units per hour",
+            "default": 100
+          }
+        },
+        "type": "object",
+        "required": [
+          "line_id",
+          "name"
+        ],
+        "title": "ProductionLine"
+      },
+      "RecommendationModel": {
+        "properties": {
+          "zone": {
+            "type": "string",
+            "title": "Zone"
+          },
+          "action": {
+            "type": "string",
+            "title": "Action"
+          },
+          "priority": {
+            "type": "string",
+            "title": "Priority"
+          },
+          "estimated_savings": {
+            "type": "number",
+            "title": "Estimated Savings"
+          },
+          "implementation": {
+            "type": "string",
+            "title": "Implementation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "zone",
+          "action",
+          "priority",
+          "estimated_savings",
+          "implementation"
+        ],
+        "title": "RecommendationModel"
+      },
+      "SimulationComparison": {
+        "properties": {
+          "baseline": {
+            "$ref": "#/components/schemas/SimulationMetrics"
+          },
+          "modified": {
+            "$ref": "#/components/schemas/SimulationMetrics"
+          },
+          "delta": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Delta"
+          },
+          "percent_change": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Percent Change"
+          }
+        },
+        "type": "object",
+        "required": [
+          "baseline",
+          "modified",
+          "delta",
+          "percent_change"
+        ],
+        "title": "SimulationComparison"
+      },
+      "SimulationMetrics": {
+        "properties": {
+          "total_energy_kwh": {
+            "type": "number",
+            "title": "Total Energy Kwh"
+          },
+          "total_cost_usd": {
+            "type": "number",
+            "title": "Total Cost Usd"
+          },
+          "total_co2_kg": {
+            "type": "number",
+            "title": "Total Co2 Kg"
+          },
+          "avg_efficiency_pct": {
+            "type": "number",
+            "title": "Avg Efficiency Pct"
+          },
+          "total_production_units": {
+            "type": "integer",
+            "title": "Total Production Units"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_energy_kwh",
+          "total_cost_usd",
+          "total_co2_kg",
+          "avg_efficiency_pct",
+          "total_production_units"
+        ],
+        "title": "SimulationMetrics"
+      },
+      "SimulationRequest": {
+        "properties": {
+          "simulation_name": {
+            "type": "string",
+            "title": "Simulation Name",
+            "description": "Name for this simulation"
+          },
+          "modifications": {
+            "items": {
+              "$ref": "#/components/schemas/ZoneModification"
+            },
+            "type": "array",
+            "title": "Modifications",
+            "description": "Zone modifications to apply"
+          },
+          "duration_hours": {
+            "type": "integer",
+            "maximum": 168,
+            "minimum": 1,
+            "title": "Duration Hours",
+            "description": "Simulation duration",
+            "default": 24
+          }
+        },
+        "type": "object",
+        "required": [
+          "simulation_name",
+          "modifications"
+        ],
+        "title": "SimulationRequest"
+      },
+      "SimulationResult": {
+        "properties": {
+          "simulation_id": {
+            "type": "string",
+            "title": "Simulation Id"
+          },
+          "simulation_name": {
+            "type": "string",
+            "title": "Simulation Name"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "zones_modified": {
+            "type": "integer",
+            "title": "Zones Modified"
+          },
+          "comparison": {
+            "$ref": "#/components/schemas/SimulationComparison"
+          },
+          "zone_details": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Zone Details"
+          },
+          "recommendations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Recommendations"
+          },
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "simulation_id",
+          "simulation_name",
+          "status",
+          "zones_modified",
+          "comparison",
+          "zone_details",
+          "recommendations",
+          "timestamp"
+        ],
+        "title": "SimulationResult"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "WhatIfResult": {
+        "properties": {
+          "scenario": {
+            "$ref": "#/components/schemas/WhatIfScenario"
+          },
+          "predicted_impact": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Predicted Impact"
+          },
+          "feasibility": {
+            "type": "string",
+            "title": "Feasibility"
+          },
+          "risk_level": {
+            "type": "string",
+            "title": "Risk Level"
+          },
+          "recommendation": {
+            "type": "string",
+            "title": "Recommendation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scenario",
+          "predicted_impact",
+          "feasibility",
+          "risk_level",
+          "recommendation"
+        ],
+        "title": "WhatIfResult"
+      },
+      "WhatIfScenario": {
+        "properties": {
+          "scenario_name": {
+            "type": "string",
+            "title": "Scenario Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "zone": {
+            "type": "string",
+            "title": "Zone"
+          },
+          "parameter": {
+            "type": "string",
+            "title": "Parameter"
+          },
+          "value_change": {
+            "type": "number",
+            "title": "Value Change"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scenario_name",
+          "description",
+          "zone",
+          "parameter",
+          "value_change"
+        ],
+        "title": "WhatIfScenario"
+      },
+      "ZoneMetricsModel": {
+        "properties": {
+          "energy_kwh": {
+            "type": "number",
+            "title": "Energy Kwh"
+          },
+          "temperature_c": {
+            "type": "number",
+            "title": "Temperature C"
+          },
+          "efficiency_pct": {
+            "type": "number",
+            "title": "Efficiency Pct"
+          },
+          "co2_kg": {
+            "type": "number",
+            "title": "Co2 Kg"
+          },
+          "cost_usd": {
+            "type": "number",
+            "title": "Cost Usd"
+          },
+          "production_units": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Production Units"
+          }
+        },
+        "type": "object",
+        "required": [
+          "energy_kwh",
+          "temperature_c",
+          "efficiency_pct",
+          "co2_kg",
+          "cost_usd"
+        ],
+        "title": "ZoneMetricsModel"
+      },
+      "ZoneModification": {
+        "properties": {
+          "zone_name": {
+            "type": "string",
+            "title": "Zone Name"
+          },
+          "temperature_offset": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Temperature Offset",
+            "description": "Temperature change in °C"
+          },
+          "efficiency_modifier": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Efficiency Modifier",
+            "description": "Efficiency percentage change"
+          },
+          "energy_multiplier": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Energy Multiplier",
+            "description": "Energy usage multiplier"
+          },
+          "add_production_lines": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ProductionLine"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Add Production Lines",
+            "description": "Lines to add"
+          },
+          "remove_line_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Remove Line Ids",
+            "description": "Line IDs to remove"
+          }
+        },
+        "type": "object",
+        "required": [
+          "zone_name"
+        ],
+        "title": "ZoneModification"
+      },
+      "ZoneStatusModel": {
+        "properties": {
+          "zone_id": {
+            "type": "string",
+            "title": "Zone Id"
+          },
+          "zone_name": {
+            "type": "string",
+            "title": "Zone Name"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "metrics": {
+            "$ref": "#/components/schemas/ZoneMetricsModel"
+          },
+          "alerts": {
+            "items": {
+              "$ref": "#/components/schemas/AlertModel"
+            },
+            "type": "array",
+            "title": "Alerts",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "zone_id",
+          "zone_name",
+          "status",
+          "metrics"
+        ],
+        "title": "ZoneStatusModel"
+      }
+    }
+  }
+}

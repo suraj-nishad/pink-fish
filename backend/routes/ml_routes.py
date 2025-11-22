@@ -61,8 +61,24 @@ except Exception as e:
 # Pydantic Models
 
 class AnomalyDetectionRequest(BaseModel):
-    zone: Optional[str] = Field(None, description="Specific zone to analyze, or None for all zones")
-    hours: int = Field(24, ge=1, le=168, description="Hours of data to analyze")
+    zone: Optional[str] = Field(None, description="Specific zone to analyze (e.g., 'Paint Shop'), or None for all zones", 
+                                 examples=["Paint Shop", "Body Shop (BIW)", "Assembly"])
+    hours: int = Field(24, ge=1, le=168, description="Hours of historical data to analyze (1-168)")
+    
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "zone": "Paint Shop",
+                    "hours": 24
+                },
+                {
+                    "zone": None,
+                    "hours": 48
+                }
+            ]
+        }
+    }
 
 class AnomalyResult(BaseModel):
     timestamp: str
@@ -80,10 +96,28 @@ class AnomalyDetectionResponse(BaseModel):
     timestamp: str
 
 class EnergyForecastRequest(BaseModel):
-    zone: str = Field(..., description="Zone to forecast")
-    hours_ahead: int = Field(24, ge=1, le=168, description="Hours to forecast")
-    current_temp: Optional[float] = Field(None, description="Current temperature")
-    current_efficiency: Optional[float] = Field(None, description="Current efficiency")
+    zone: str = Field(..., description="Zone name to forecast energy consumption", 
+                      examples=["Paint Shop", "Body Shop (BIW)", "General Assembly"])
+    hours_ahead: int = Field(24, ge=1, le=168, description="Number of hours to forecast ahead (1-168)")
+    current_temp: Optional[float] = Field(None, description="Current temperature in °C (optional, uses latest if not provided)")
+    current_efficiency: Optional[float] = Field(None, description="Current efficiency percentage (optional, uses latest if not provided)")
+    
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "zone": "Paint Shop",
+                    "hours_ahead": 24,
+                    "current_temp": 185.0,
+                    "current_efficiency": 85.0
+                },
+                {
+                    "zone": "Assembly",
+                    "hours_ahead": 48
+                }
+            ]
+        }
+    }
 
 class ForecastPoint(BaseModel):
     timestamp: str

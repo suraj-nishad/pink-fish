@@ -76,25 +76,101 @@ simulation_store = {}
 # Pydantic Models
 
 class ProductionLine(BaseModel):
-    line_id: str
-    name: str
-    energy_multiplier: float = Field(1.0, description="Energy usage multiplier")
-    efficiency_modifier: float = Field(0.0, description="Efficiency percentage modifier")
-    production_capacity: int = Field(100, description="Units per hour")
+    line_id: str = Field(..., description="Unique identifier for the production line", examples=["line-002", "paint-line-2"])
+    name: str = Field(..., description="Descriptive name for the production line", examples=["Paint Line 2", "Assembly Line B"])
+    energy_multiplier: float = Field(1.0, description="Energy usage multiplier (e.g., 1.5 = 50% more energy)")
+    efficiency_modifier: float = Field(0.0, description="Efficiency percentage modifier (e.g., -5 = -5% efficiency)")
+    production_capacity: int = Field(100, description="Production capacity in units per hour")
+    
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "line_id": "paint-line-2",
+                    "name": "Paint Shop Line 2",
+                    "energy_multiplier": 1.0,
+                    "efficiency_modifier": -5.0,
+                    "production_capacity": 60
+                }
+            ]
+        }
+    }
 
 class ZoneModification(BaseModel):
-    zone_name: str
-    temperature_offset: Optional[float] = Field(None, description="Temperature change in °C")
-    efficiency_modifier: Optional[float] = Field(None, description="Efficiency percentage change")
-    energy_multiplier: Optional[float] = Field(None, description="Energy usage multiplier")
-    capacity_increase: Optional[float] = Field(None, description="Production capacity increase percentage (e.g., 50 for 50% increase when adding production lines)")
-    add_production_lines: Optional[List[ProductionLine]] = Field(None, description="Lines to add")
-    remove_line_ids: Optional[List[str]] = Field(None, description="Line IDs to remove")
+    zone_name: str = Field(..., description="Name of the manufacturing zone to modify. Valid zones: 'Stamping Shop', 'Body Shop (BIW)', 'Paint Shop', 'General Assembly', 'Powertrain Assembly', 'Quality Control', 'Logistics'",
+                          examples=["Paint Shop", "Body Shop (BIW)", "General Assembly"])
+    temperature_offset: Optional[float] = Field(None, description="Temperature change in °C (e.g., -10 to reduce by 10°C, +5 to increase by 5°C)")
+    efficiency_modifier: Optional[float] = Field(None, description="Efficiency percentage change (e.g., -5 for -5% efficiency, +3 for +3% efficiency)")
+    energy_multiplier: Optional[float] = Field(None, description="Energy usage multiplier as decimal (e.g., 1.5 for 50% increase, 0.8 for 20% reduction)")
+    capacity_increase: Optional[float] = Field(None, description="Production capacity increase as percentage (e.g., 50 for 50% increase when adding production lines, 100 for doubling capacity)")
+    add_production_lines: Optional[List[ProductionLine]] = Field(None, description="Array of production lines to add to the zone")
+    remove_line_ids: Optional[List[str]] = Field(None, description="Array of line IDs to remove from the zone")
+    
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "zone_name": "Paint Shop",
+                    "capacity_increase": 50,
+                    "efficiency_modifier": -10,
+                    "energy_multiplier": 1.5
+                },
+                {
+                    "zone_name": "Body Shop (BIW)",
+                    "temperature_offset": -5,
+                    "efficiency_modifier": 3
+                },
+                {
+                    "zone_name": "Assembly",
+                    "add_production_lines": [
+                        {
+                            "line_id": "assembly-line-c",
+                            "name": "Assembly Line C",
+                            "energy_multiplier": 1.0,
+                            "efficiency_modifier": -5,
+                            "production_capacity": 120
+                        }
+                    ]
+                }
+            ]
+        }
+    }
 
 class SimulationRequest(BaseModel):
-    simulation_name: str = Field(..., description="Name for this simulation")
-    modifications: List[ZoneModification] = Field(..., description="Zone modifications to apply")
-    duration_hours: int = Field(24, ge=1, le=168, description="Simulation duration")
+    simulation_name: str = Field(..., description="Descriptive name for this simulation scenario", 
+                                  examples=["Add second Paint Shop line", "Reduce assembly temperature", "Q1 2026 capacity increase"])
+    modifications: List[ZoneModification] = Field(..., description="Array of zone modifications to simulate. Each modification must include 'zone_name' and at least one parameter change.")
+    duration_hours: int = Field(24, ge=1, le=168, description="Number of hours to simulate (1-168). Use 720 for 30-day simulation, 168 for 1-week simulation.")
+    
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "simulation_name": "Add second production line to Paint Shop",
+                    "modifications": [
+                        {
+                            "zone_name": "Paint Shop",
+                            "capacity_increase": 50,
+                            "efficiency_modifier": -10,
+                            "energy_multiplier": 1.5
+                        }
+                    ],
+                    "duration_hours": 720
+                },
+                {
+                    "simulation_name": "Reduce energy consumption in Body Shop",
+                    "modifications": [
+                        {
+                            "zone_name": "Body Shop (BIW)",
+                            "temperature_offset": -10,
+                            "energy_multiplier": 0.9
+                        }
+                    ],
+                    "duration_hours": 168
+                }
+            ]
+        }
+    }
 
 class SimulationMetrics(BaseModel):
     total_energy_kwh: float
@@ -120,11 +196,36 @@ class SimulationResult(BaseModel):
     timestamp: str
 
 class WhatIfScenario(BaseModel):
-    scenario_name: str
-    description: str
-    zone: str
-    parameter: str
-    value_change: float
+    scenario_name: str = Field(..., description="Name for this what-if scenario", 
+                               examples=["Reduce Paint Shop Temperature", "Increase Assembly Efficiency"])
+    description: str = Field(..., description="Detailed description of the scenario", 
+                            examples=["Test impact of reducing oven temperature by 10°C", "Improve efficiency through automation"])
+    zone: str = Field(..., description="Zone name to test. Valid zones: 'Stamping Shop', 'Body Shop (BIW)', 'Paint Shop', 'General Assembly', 'Powertrain Assembly', 'Quality Control', 'Logistics'",
+                     examples=["Paint Shop", "Body Shop (BIW)", "General Assembly"])
+    parameter: str = Field(..., description="Parameter to modify. Valid parameters: 'temperature', 'energy', 'efficiency', 'capacity', 'production_rate'",
+                          examples=["temperature", "energy", "efficiency"])
+    value_change: float = Field(..., description="Amount to change the parameter by (positive or negative). For temperature: degrees Celsius, For efficiency: percentage points, For energy: multiplier (e.g., -0.2 = 20% reduction)")
+    
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "scenario_name": "Reduce Paint Shop Temperature",
+                    "description": "Test impact of reducing oven temperature by 10°C to save energy",
+                    "zone": "Paint Shop",
+                    "parameter": "temperature",
+                    "value_change": -10
+                },
+                {
+                    "scenario_name": "Improve Assembly Efficiency",
+                    "description": "Test impact of 5% efficiency improvement through automation",
+                    "zone": "General Assembly",
+                    "parameter": "efficiency",
+                    "value_change": 5
+                }
+            ]
+        }
+    }
 
 class WhatIfResult(BaseModel):
     scenario: WhatIfScenario

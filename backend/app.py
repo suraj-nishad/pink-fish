@@ -117,8 +117,20 @@ class EnergyAnalysisResponse(BaseModel):
     timestamp: str
 
 class ChatOpsRequest(BaseModel):
-    query: str
-    user: Optional[str] = "operator"
+    query: str = Field(..., description="Natural language query about plant operations", 
+                       examples=["Why is Paint Shop red?", "What zones need maintenance?", "Show me energy consumption trends"])
+    user: Optional[str] = Field("operator", description="User identifier")
+    
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "query": "Why is Paint Shop showing red status?",
+                    "user": "operator_123"
+                }
+            ]
+        }
+    }
 
 class ChatOpsResponse(BaseModel):
     query: str
@@ -127,9 +139,24 @@ class ChatOpsResponse(BaseModel):
     confidence: float
 
 class MaintenanceRequest(BaseModel):
-    zone: str
-    issue: str
-    priority: str
+    zone: str = Field(..., description="Zone name requiring maintenance", 
+                      examples=["Paint Shop", "Body Shop (BIW)", "Assembly"])
+    issue: str = Field(..., description="Description of the maintenance issue", 
+                       examples=["Oven temperature anomaly", "Equipment efficiency below threshold"])
+    priority: str = Field(..., description="Maintenance priority level", 
+                          examples=["low", "medium", "high"])
+    
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "zone": "Paint Shop",
+                    "issue": "Oven temperature anomaly detected - 3 occurrences in 24h",
+                    "priority": "high"
+                }
+            ]
+        }
+    }
 
 class MaintenanceResponse(BaseModel):
     ticket_id: str

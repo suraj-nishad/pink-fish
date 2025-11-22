@@ -95,3 +95,8 @@ PROJECT_STATUS.md
 # Uncomment if you want to regenerate fresh each time
 # data/*.csv
 # data/*.json
+
+
+#vercel
+VERCEL_DEPLOYMENT.md
+vercel.json

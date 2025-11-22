@@ -7,12 +7,12 @@
   },
   "servers": [
     {
-      "url": "http://127.0.0.1:8000",
-      "description": "Local Development Server"
-    },
-    {
       "url": "https://pink-fish-production.up.railway.app",
       "description": "Production Server"
+    },
+    {
+      "url": "http://127.0.0.1:8000",
+      "description": "Local Development Server"
     }
   ],
   "paths": {
@@ -135,9 +135,7 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {
-
-                }
+                "schema": {}
               }
             }
           }
@@ -241,9 +239,7 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {
-
-                }
+                "schema": {}
               }
             }
           }
@@ -263,9 +259,7 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {
-
-                }
+                "schema": {}
               }
             }
           }
@@ -296,9 +290,7 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {
-
-                }
+                "schema": {}
               }
             }
           },
@@ -328,9 +320,7 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {
-
-                }
+                "schema": {}
               }
             }
           }
@@ -350,9 +340,7 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {
-
-                }
+                "schema": {}
               }
             }
           }
@@ -372,9 +360,7 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {
-
-                }
+                "schema": {}
               }
             }
           }
@@ -585,9 +571,7 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {
-
-                }
+                "schema": {}
               }
             }
           },
@@ -693,9 +677,7 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {
-
-                }
+                "schema": {}
               }
             }
           },
@@ -754,8 +736,8 @@
           },
           "hours": {
             "type": "integer",
-            "maximum": 168,
-            "minimum": 1,
+            "maximum": 168.0,
+            "minimum": 1.0,
             "title": "Hours",
             "description": "Hours of data to analyze",
             "default": 24
@@ -981,8 +963,8 @@
           },
           "hours_ahead": {
             "type": "integer",
-            "maximum": 168,
-            "minimum": 1,
+            "maximum": 168.0,
+            "minimum": 1.0,
             "title": "Hours Ahead",
             "description": "Hours to forecast",
             "default": 24
@@ -1310,13 +1292,13 @@
             "type": "number",
             "title": "Energy Multiplier",
             "description": "Energy usage multiplier",
-            "default": 1
+            "default": 1.0
           },
           "efficiency_modifier": {
             "type": "number",
             "title": "Efficiency Modifier",
             "description": "Efficiency percentage modifier",
-            "default": 0
+            "default": 0.0
           },
           "production_capacity": {
             "type": "integer",
@@ -1447,8 +1429,8 @@
           },
           "duration_hours": {
             "type": "integer",
-            "maximum": 168,
-            "minimum": 1,
+            "maximum": 168.0,
+            "minimum": 1.0,
             "title": "Duration Hours",
             "description": "Simulation duration",
             "default": 24
@@ -1676,7 +1658,7 @@
               }
             ],
             "title": "Temperature Offset",
-            "description": "Temperature change in °C"
+            "description": "Temperature change in \u00b0C"
           },
           "efficiency_modifier": {
             "anyOf": [
@@ -1701,6 +1683,18 @@
             ],
             "title": "Energy Multiplier",
             "description": "Energy usage multiplier"
+          },
+          "capacity_increase": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capacity Increase",
+            "description": "Production capacity increase percentage (e.g., 50 for 50% increase when adding production lines)"
           },
           "add_production_lines": {
             "anyOf": [

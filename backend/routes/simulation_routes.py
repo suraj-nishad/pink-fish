@@ -87,6 +87,7 @@ class ZoneModification(BaseModel):
     temperature_offset: Optional[float] = Field(None, description="Temperature change in °C")
     efficiency_modifier: Optional[float] = Field(None, description="Efficiency percentage change")
     energy_multiplier: Optional[float] = Field(None, description="Energy usage multiplier")
+    capacity_increase: Optional[float] = Field(None, description="Production capacity increase percentage (e.g., 50 for 50% increase when adding production lines)")
     add_production_lines: Optional[List[ProductionLine]] = Field(None, description="Lines to add")
     remove_line_ids: Optional[List[str]] = Field(None, description="Line IDs to remove")
 
@@ -194,6 +195,24 @@ def apply_modifications(base_config, modifications):
         # Apply energy multiplier
         if mod.energy_multiplier is not None:
             modified_config[zone]['base_energy'] *= mod.energy_multiplier
+        
+        # Apply capacity increase (simplified way to add production capacity)
+        if mod.capacity_increase is not None:
+            # Increase production capacity
+            capacity_multiplier = 1.0 + (mod.capacity_increase / 100.0)
+            modified_config[zone]['production_capacity'] = int(
+                modified_config[zone]['production_capacity'] * capacity_multiplier
+            )
+            
+            # Adding capacity typically increases energy consumption
+            if mod.energy_multiplier is None:  # Only auto-adjust if not explicitly set
+                modified_config[zone]['base_energy'] *= capacity_multiplier
+            
+            # Adding capacity with untrained staff may reduce efficiency slightly
+            if mod.efficiency_modifier is None:  # Only auto-adjust if not explicitly set
+                efficiency_impact = -(mod.capacity_increase / 10.0)  # 50% capacity = -5% efficiency
+                modified_config[zone]['base_efficiency'] += efficiency_impact
+                modified_config[zone]['base_efficiency'] = max(50, min(100, modified_config[zone]['base_efficiency']))
         
         # Add production lines
         if mod.add_production_lines:

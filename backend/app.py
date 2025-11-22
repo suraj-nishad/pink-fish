@@ -32,8 +32,8 @@ app = FastAPI(
     version="1.0.0",
     description="Automotive plant digital twin APIs with IBM watsonx Orchestrate integration for energy analysis and predictive maintenance",
     servers=[
-        {"url": "http://127.0.0.1:8000", "description": "Local Development Server"},
-        {"url": "https://pink-fish-production.up.railway.app", "description": "Production Server"}
+        {"url": "https://pink-fish-production.up.railway.app", "description": "Production Server"},
+        {"url": "http://127.0.0.1:8000", "description": "Local Development Server"}
     ],
 )
 

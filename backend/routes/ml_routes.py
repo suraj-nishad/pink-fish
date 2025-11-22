@@ -123,9 +123,10 @@ class PredictiveMaintenanceResponse(BaseModel):
 
 def load_plant_data():
     """Load plant data from CSV"""
-    data_path = '/Users/suraj/digital-twin/data/plant_data_30days.csv'
+    # Use relative path that works in any environment
+    data_path = os.path.join(os.path.dirname(__file__), "..", "..", "data", "plant_data_30days.csv")
     try:
-        return pd.read_csv(data_path)
+        return pd.read_csv(data_path, parse_dates=["timestamp"])
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Could not load plant data: {str(e)}")
 

@@ -1,0 +1,35 @@
+{
+  "total_records": 5040,
+  "date_range": {
+    "start": "2025-10-23 13:05:22",
+    "end": "2025-11-22 12:05:22"
+  },
+  "zones": 7,
+  "total_anomalies": 163,
+  "anomalies_by_type": {
+    "energy_spike": 57,
+    "temp_anomaly": 49,
+    "efficiency_drop": 57
+  },
+  "avg_energy_by_zone": {
+    "Body Shop (BIW)": 716.49,
+    "General Assembly": 608.69,
+    "Logistics": 249.36,
+    "Paint Shop": 1068.61,
+    "Powertrain Assembly": 491.98,
+    "Quality Control": 286.43,
+    "Stamping Shop": 402.51
+  },
+  "avg_efficiency_by_zone": {
+    "Body Shop (BIW)": 86.6,
+    "General Assembly": 85.72,
+    "Logistics": 90.55,
+    "Paint Shop": 82.8,
+    "Powertrain Assembly": 87.37,
+    "Quality Control": 92.33,
+    "Stamping Shop": 89.3
+  },
+  "total_energy_kwh": 2753331.26,
+  "total_co2_kg": 641125.05,
+  "total_cost_usd": 328266.67
+}

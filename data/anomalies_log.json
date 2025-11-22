@@ -1,0 +1,980 @@
+[
+  {
+    "timestamp": "2025-10-23 13:05:22",
+    "zone": "Logistics",
+    "type": "temp_anomaly",
+    "index": 6
+  },
+  {
+    "timestamp": "2025-10-23 16:05:22",
+    "zone": "Powertrain Assembly",
+    "type": "temp_anomaly",
+    "index": 25
+  },
+  {
+    "timestamp": "2025-10-24 00:05:22",
+    "zone": "Paint Shop",
+    "type": "temp_anomaly",
+    "index": 79
+  },
+  {
+    "timestamp": "2025-10-24 02:05:22",
+    "zone": "Logistics",
+    "type": "temp_anomaly",
+    "index": 97
+  },
+  {
+    "timestamp": "2025-10-24 10:05:22",
+    "zone": "General Assembly",
+    "type": "temp_anomaly",
+    "index": 150
+  },
+  {
+    "timestamp": "2025-10-24 10:05:22",
+    "zone": "Powertrain Assembly",
+    "type": "energy_spike",
+    "index": 151
+  },
+  {
+    "timestamp": "2025-10-24 11:05:22",
+    "zone": "Stamping Shop",
+    "type": "efficiency_drop",
+    "index": 154
+  },
+  {
+    "timestamp": "2025-10-24 12:05:22",
+    "zone": "Powertrain Assembly",
+    "type": "temp_anomaly",
+    "index": 165
+  },
+  {
+    "timestamp": "2025-10-24 16:05:22",
+    "zone": "Powertrain Assembly",
+    "type": "efficiency_drop",
+    "index": 193
+  },
+  {
+    "timestamp": "2025-10-24 18:05:22",
+    "zone": "Stamping Shop",
+    "type": "efficiency_drop",
+    "index": 203
+  },
+  {
+    "timestamp": "2025-10-24 23:05:22",
+    "zone": "Stamping Shop",
+    "type": "energy_spike",
+    "index": 238
+  },
+  {
+    "timestamp": "2025-10-25 00:05:22",
+    "zone": "Logistics",
+    "type": "temp_anomaly",
+    "index": 251
+  },
+  {
+    "timestamp": "2025-10-25 05:05:22",
+    "zone": "General Assembly",
+    "type": "efficiency_drop",
+    "index": 283
+  },
+  {
+    "timestamp": "2025-10-25 08:05:22",
+    "zone": "Body Shop (BIW)",
+    "type": "temp_anomaly",
+    "index": 302
+  },
+  {
+    "timestamp": "2025-10-25 08:05:22",
+    "zone": "Quality Control",
+    "type": "energy_spike",
+    "index": 306
+  },
+  {
+    "timestamp": "2025-10-25 09:05:22",
+    "zone": "Quality Control",
+    "type": "efficiency_drop",
+    "index": 313
+  },
+  {
+    "timestamp": "2025-10-25 15:05:22",
+    "zone": "Stamping Shop",
+    "type": "energy_spike",
+    "index": 350
+  },
+  {
+    "timestamp": "2025-10-25 15:05:22",
+    "zone": "Quality Control",
+    "type": "efficiency_drop",
+    "index": 355
+  },
+  {
+    "timestamp": "2025-10-25 17:05:22",
+    "zone": "Logistics",
+    "type": "temp_anomaly",
+    "index": 370
+  },
+  {
+    "timestamp": "2025-10-25 20:05:22",
+    "zone": "Logistics",
+    "type": "energy_spike",
+    "index": 391
+  },
+  {
+    "timestamp": "2025-10-25 21:05:22",
+    "zone": "Quality Control",
+    "type": "efficiency_drop",
+    "index": 397
+  },
+  {
+    "timestamp": "2025-10-25 23:05:22",
+    "zone": "Quality Control",
+    "type": "energy_spike",
+    "index": 411
+  },
+  {
+    "timestamp": "2025-10-26 00:05:22",
+    "zone": "Quality Control",
+    "type": "efficiency_drop",
+    "index": 418
+  },
+  {
+    "timestamp": "2025-10-26 04:05:22",
+    "zone": "Quality Control",
+    "type": "energy_spike",
+    "index": 446
+  },
+  {
+    "timestamp": "2025-10-26 06:05:22",
+    "zone": "General Assembly",
+    "type": "energy_spike",
+    "index": 458
+  },
+  {
+    "timestamp": "2025-10-26 10:05:22",
+    "zone": "Quality Control",
+    "type": "efficiency_drop",
+    "index": 488
+  },
+  {
+    "timestamp": "2025-10-26 12:05:22",
+    "zone": "Powertrain Assembly",
+    "type": "efficiency_drop",
+    "index": 501
+  },
+  {
+    "timestamp": "2025-10-26 14:05:22",
+    "zone": "Powertrain Assembly",
+    "type": "temp_anomaly",
+    "index": 515
+  },
+  {
+    "timestamp": "2025-10-26 18:05:22",
+    "zone": "Stamping Shop",
+    "type": "efficiency_drop",
+    "index": 539
+  },
+  {
+    "timestamp": "2025-10-27 07:05:22",
+    "zone": "Stamping Shop",
+    "type": "energy_spike",
+    "index": 630
+  },
+  {
+    "timestamp": "2025-10-27 08:05:22",
+    "zone": "Logistics",
+    "type": "temp_anomaly",
+    "index": 643
+  },
+  {
+    "timestamp": "2025-10-27 12:05:22",
+    "zone": "Logistics",
+    "type": "energy_spike",
+    "index": 671
+  },
+  {
+    "timestamp": "2025-10-27 14:05:22",
+    "zone": "Stamping Shop",
+    "type": "efficiency_drop",
+    "index": 679
+  },
+  {
+    "timestamp": "2025-10-27 15:05:22",
+    "zone": "Quality Control",
+    "type": "temp_anomaly",
+    "index": 691
+  },
+  {
+    "timestamp": "2025-10-27 19:05:22",
+    "zone": "General Assembly",
+    "type": "energy_spike",
+    "index": 717
+  },
+  {
+    "timestamp": "2025-10-28 08:05:22",
+    "zone": "Logistics",
+    "type": "energy_spike",
+    "index": 811
+  },
+  {
+    "timestamp": "2025-10-28 10:05:22",
+    "zone": "Body Shop (BIW)",
+    "type": "energy_spike",
+    "index": 820
+  },
+  {
+    "timestamp": "2025-10-28 12:05:22",
+    "zone": "Body Shop (BIW)",
+    "type": "efficiency_drop",
+    "index": 834
+  },
+  {
+    "timestamp": "2025-10-28 15:05:22",
+    "zone": "Stamping Shop",
+    "type": "energy_spike",
+    "index": 854
+  },
+  {
+    "timestamp": "2025-10-29 08:05:22",
+    "zone": "Body Shop (BIW)",
+    "type": "temp_anomaly",
+    "index": 974
+  },
+  {
+    "timestamp": "2025-10-29 08:05:22",
+    "zone": "Powertrain Assembly",
+    "type": "efficiency_drop",
+    "index": 977
+  },
+  {
+    "timestamp": "2025-10-29 10:05:22",
+    "zone": "Paint Shop",
+    "type": "energy_spike",
+    "index": 989
+  },
+  {
+    "timestamp": "2025-10-29 13:05:22",
+    "zone": "Quality Control",
+    "type": "efficiency_drop",
+    "index": 1013
+  },
+  {
+    "timestamp": "2025-10-29 14:05:22",
+    "zone": "Quality Control",
+    "type": "energy_spike",
+    "index": 1020
+  },
+  {
+    "timestamp": "2025-10-29 19:05:22",
+    "zone": "Stamping Shop",
+    "type": "efficiency_drop",
+    "index": 1050
+  },
+  {
+    "timestamp": "2025-10-30 04:05:22",
+    "zone": "Powertrain Assembly",
+    "type": "energy_spike",
+    "index": 1117
+  },
+  {
+    "timestamp": "2025-10-30 06:05:22",
+    "zone": "Body Shop (BIW)",
+    "type": "efficiency_drop",
+    "index": 1128
+  },
+  {
+    "timestamp": "2025-10-30 19:05:22",
+    "zone": "General Assembly",
+    "type": "efficiency_drop",
+    "index": 1221
+  },
+  {
+    "timestamp": "2025-10-31 00:05:22",
+    "zone": "Powertrain Assembly",
+    "type": "energy_spike",
+    "index": 1257
+  },
+  {
+    "timestamp": "2025-10-31 04:05:22",
+    "zone": "General Assembly",
+    "type": "energy_spike",
+    "index": 1284
+  },
+  {
+    "timestamp": "2025-10-31 21:05:22",
+    "zone": "Stamping Shop",
+    "type": "energy_spike",
+    "index": 1400
+  },
+  {
+    "timestamp": "2025-11-01 01:05:22",
+    "zone": "Body Shop (BIW)",
+    "type": "energy_spike",
+    "index": 1429
+  },
+  {
+    "timestamp": "2025-11-01 03:05:22",
+    "zone": "Stamping Shop",
+    "type": "efficiency_drop",
+    "index": 1442
+  },
+  {
+    "timestamp": "2025-11-01 07:05:22",
+    "zone": "Powertrain Assembly",
+    "type": "energy_spike",
+    "index": 1474
+  },
+  {
+    "timestamp": "2025-11-01 19:05:22",
+    "zone": "Quality Control",
+    "type": "efficiency_drop",
+    "index": 1559
+  },
+  {
+    "timestamp": "2025-11-02 06:05:22",
+    "zone": "Stamping Shop",
+    "type": "temp_anomaly",
+    "index": 1631
+  },
+  {
+    "timestamp": "2025-11-02 09:05:22",
+    "zone": "Logistics",
+    "type": "efficiency_drop",
+    "index": 1658
+  },
+  {
+    "timestamp": "2025-11-02 14:05:22",
+    "zone": "Body Shop (BIW)",
+    "type": "temp_anomaly",
+    "index": 1688
+  },
+  {
+    "timestamp": "2025-11-02 19:05:22",
+    "zone": "General Assembly",
+    "type": "efficiency_drop",
+    "index": 1725
+  },
+  {
+    "timestamp": "2025-11-03 00:05:22",
+    "zone": "Body Shop (BIW)",
+    "type": "energy_spike",
+    "index": 1758
+  },
+  {
+    "timestamp": "2025-11-03 00:05:22",
+    "zone": "Logistics",
+    "type": "temp_anomaly",
+    "index": 1763
+  },
+  {
+    "timestamp": "2025-11-03 02:05:22",
+    "zone": "Logistics",
+    "type": "efficiency_drop",
+    "index": 1777
+  },
+  {
+    "timestamp": "2025-11-03 13:05:22",
+    "zone": "Paint Shop",
+    "type": "temp_anomaly",
+    "index": 1850
+  },
+  {
+    "timestamp": "2025-11-03 14:05:22",
+    "zone": "Quality Control",
+    "type": "energy_spike",
+    "index": 1860
+  },
+  {
+    "timestamp": "2025-11-03 17:05:22",
+    "zone": "Logistics",
+    "type": "energy_spike",
+    "index": 1882
+  },
+  {
+    "timestamp": "2025-11-03 22:05:22",
+    "zone": "Powertrain Assembly",
+    "type": "temp_anomaly",
+    "index": 1915
+  },
+  {
+    "timestamp": "2025-11-04 00:05:22",
+    "zone": "Quality Control",
+    "type": "temp_anomaly",
+    "index": 1930
+  },
+  {
+    "timestamp": "2025-11-04 06:05:22",
+    "zone": "Powertrain Assembly",
+    "type": "energy_spike",
+    "index": 1971
+  },
+  {
+    "timestamp": "2025-11-04 12:05:22",
+    "zone": "Paint Shop",
+    "type": "energy_spike",
+    "index": 2011
+  },
+  {
+    "timestamp": "2025-11-05 08:05:22",
+    "zone": "Stamping Shop",
+    "type": "temp_anomaly",
+    "index": 2149
+  },
+  {
+    "timestamp": "2025-11-05 19:05:22",
+    "zone": "Body Shop (BIW)",
+    "type": "efficiency_drop",
+    "index": 2227
+  },
+  {
+    "timestamp": "2025-11-05 20:05:22",
+    "zone": "General Assembly",
+    "type": "temp_anomaly",
+    "index": 2236
+  },
+  {
+    "timestamp": "2025-11-06 06:05:22",
+    "zone": "Quality Control",
+    "type": "temp_anomaly",
+    "index": 2308
+  },
+  {
+    "timestamp": "2025-11-06 14:05:22",
+    "zone": "Powertrain Assembly",
+    "type": "temp_anomaly",
+    "index": 2363
+  },
+  {
+    "timestamp": "2025-11-06 22:05:22",
+    "zone": "Powertrain Assembly",
+    "type": "efficiency_drop",
+    "index": 2419
+  },
+  {
+    "timestamp": "2025-11-07 11:05:22",
+    "zone": "General Assembly",
+    "type": "energy_spike",
+    "index": 2509
+  },
+  {
+    "timestamp": "2025-11-07 11:05:22",
+    "zone": "Quality Control",
+    "type": "temp_anomaly",
+    "index": 2511
+  },
+  {
+    "timestamp": "2025-11-07 21:05:22",
+    "zone": "Quality Control",
+    "type": "efficiency_drop",
+    "index": 2581
+  },
+  {
+    "timestamp": "2025-11-08 02:05:22",
+    "zone": "Body Shop (BIW)",
+    "type": "energy_spike",
+    "index": 2612
+  },
+  {
+    "timestamp": "2025-11-08 08:05:22",
+    "zone": "General Assembly",
+    "type": "temp_anomaly",
+    "index": 2656
+  },
+  {
+    "timestamp": "2025-11-08 10:05:22",
+    "zone": "Body Shop (BIW)",
+    "type": "efficiency_drop",
+    "index": 2668
+  },
+  {
+    "timestamp": "2025-11-08 10:05:22",
+    "zone": "Paint Shop",
+    "type": "efficiency_drop",
+    "index": 2669
+  },
+  {
+    "timestamp": "2025-11-08 10:05:22",
+    "zone": "Quality Control",
+    "type": "temp_anomaly",
+    "index": 2672
+  },
+  {
+    "timestamp": "2025-11-08 12:05:22",
+    "zone": "Body Shop (BIW)",
+    "type": "energy_spike",
+    "index": 2682
+  },
+  {
+    "timestamp": "2025-11-08 17:05:22",
+    "zone": "Stamping Shop",
+    "type": "temp_anomaly",
+    "index": 2716
+  },
+  {
+    "timestamp": "2025-11-09 00:05:22",
+    "zone": "Body Shop (BIW)",
+    "type": "energy_spike",
+    "index": 2766
+  },
+  {
+    "timestamp": "2025-11-09 04:05:22",
+    "zone": "Stamping Shop",
+    "type": "temp_anomaly",
+    "index": 2793
+  },
+  {
+    "timestamp": "2025-11-09 13:05:22",
+    "zone": "Stamping Shop",
+    "type": "efficiency_drop",
+    "index": 2856
+  },
+  {
+    "timestamp": "2025-11-09 14:05:22",
+    "zone": "Body Shop (BIW)",
+    "type": "energy_spike",
+    "index": 2864
+  },
+  {
+    "timestamp": "2025-11-09 18:05:22",
+    "zone": "Paint Shop",
+    "type": "temp_anomaly",
+    "index": 2893
+  },
+  {
+    "timestamp": "2025-11-09 19:05:22",
+    "zone": "Quality Control",
+    "type": "efficiency_drop",
+    "index": 2903
+  },
+  {
+    "timestamp": "2025-11-10 03:05:22",
+    "zone": "General Assembly",
+    "type": "energy_spike",
+    "index": 2957
+  },
+  {
+    "timestamp": "2025-11-10 04:05:22",
+    "zone": "General Assembly",
+    "type": "efficiency_drop",
+    "index": 2964
+  },
+  {
+    "timestamp": "2025-11-10 06:05:22",
+    "zone": "Body Shop (BIW)",
+    "type": "energy_spike",
+    "index": 2976
+  },
+  {
+    "timestamp": "2025-11-11 00:05:22",
+    "zone": "Logistics",
+    "type": "efficiency_drop",
+    "index": 3107
+  },
+  {
+    "timestamp": "2025-11-11 08:05:22",
+    "zone": "Stamping Shop",
+    "type": "efficiency_drop",
+    "index": 3157
+  },
+  {
+    "timestamp": "2025-11-12 06:05:22",
+    "zone": "Stamping Shop",
+    "type": "efficiency_drop",
+    "index": 3311
+  },
+  {
+    "timestamp": "2025-11-12 07:05:22",
+    "zone": "Powertrain Assembly",
+    "type": "energy_spike",
+    "index": 3322
+  },
+  {
+    "timestamp": "2025-11-12 20:05:22",
+    "zone": "Powertrain Assembly",
+    "type": "energy_spike",
+    "index": 3413
+  },
+  {
+    "timestamp": "2025-11-12 22:05:22",
+    "zone": "Body Shop (BIW)",
+    "type": "efficiency_drop",
+    "index": 3424
+  },
+  {
+    "timestamp": "2025-11-12 23:05:22",
+    "zone": "Body Shop (BIW)",
+    "type": "efficiency_drop",
+    "index": 3431
+  },
+  {
+    "timestamp": "2025-11-13 03:05:22",
+    "zone": "Quality Control",
+    "type": "energy_spike",
+    "index": 3463
+  },
+  {
+    "timestamp": "2025-11-13 04:05:22",
+    "zone": "Paint Shop",
+    "type": "efficiency_drop",
+    "index": 3467
+  },
+  {
+    "timestamp": "2025-11-13 04:05:22",
+    "zone": "Powertrain Assembly",
+    "type": "temp_anomaly",
+    "index": 3469
+  },
+  {
+    "timestamp": "2025-11-13 09:05:22",
+    "zone": "Quality Control",
+    "type": "temp_anomaly",
+    "index": 3505
+  },
+  {
+    "timestamp": "2025-11-13 11:05:22",
+    "zone": "General Assembly",
+    "type": "efficiency_drop",
+    "index": 3517
+  },
+  {
+    "timestamp": "2025-11-13 15:05:22",
+    "zone": "Body Shop (BIW)",
+    "type": "temp_anomaly",
+    "index": 3543
+  },
+  {
+    "timestamp": "2025-11-13 16:05:22",
+    "zone": "Quality Control",
+    "type": "efficiency_drop",
+    "index": 3554
+  },
+  {
+    "timestamp": "2025-11-13 19:05:22",
+    "zone": "General Assembly",
+    "type": "temp_anomaly",
+    "index": 3573
+  },
+  {
+    "timestamp": "2025-11-13 21:05:22",
+    "zone": "General Assembly",
+    "type": "efficiency_drop",
+    "index": 3587
+  },
+  {
+    "timestamp": "2025-11-14 01:05:22",
+    "zone": "Body Shop (BIW)",
+    "type": "efficiency_drop",
+    "index": 3613
+  },
+  {
+    "timestamp": "2025-11-14 04:05:22",
+    "zone": "General Assembly",
+    "type": "temp_anomaly",
+    "index": 3636
+  },
+  {
+    "timestamp": "2025-11-14 06:05:22",
+    "zone": "Logistics",
+    "type": "efficiency_drop",
+    "index": 3653
+  },
+  {
+    "timestamp": "2025-11-14 15:05:22",
+    "zone": "General Assembly",
+    "type": "temp_anomaly",
+    "index": 3713
+  },
+  {
+    "timestamp": "2025-11-14 18:05:22",
+    "zone": "Quality Control",
+    "type": "energy_spike",
+    "index": 3736
+  },
+  {
+    "timestamp": "2025-11-14 19:05:22",
+    "zone": "Logistics",
+    "type": "energy_spike",
+    "index": 3744
+  },
+  {
+    "timestamp": "2025-11-15 00:05:22",
+    "zone": "Logistics",
+    "type": "efficiency_drop",
+    "index": 3779
+  },
+  {
+    "timestamp": "2025-11-15 03:05:22",
+    "zone": "Powertrain Assembly",
+    "type": "efficiency_drop",
+    "index": 3798
+  },
+  {
+    "timestamp": "2025-11-15 05:05:22",
+    "zone": "Logistics",
+    "type": "efficiency_drop",
+    "index": 3814
+  },
+  {
+    "timestamp": "2025-11-15 10:05:22",
+    "zone": "Stamping Shop",
+    "type": "efficiency_drop",
+    "index": 3843
+  },
+  {
+    "timestamp": "2025-11-15 11:05:22",
+    "zone": "General Assembly",
+    "type": "temp_anomaly",
+    "index": 3853
+  },
+  {
+    "timestamp": "2025-11-15 13:05:22",
+    "zone": "Body Shop (BIW)",
+    "type": "energy_spike",
+    "index": 3865
+  },
+  {
+    "timestamp": "2025-11-15 19:05:22",
+    "zone": "Stamping Shop",
+    "type": "efficiency_drop",
+    "index": 3906
+  },
+  {
+    "timestamp": "2025-11-15 22:05:22",
+    "zone": "Quality Control",
+    "type": "efficiency_drop",
+    "index": 3932
+  },
+  {
+    "timestamp": "2025-11-16 01:05:22",
+    "zone": "Quality Control",
+    "type": "energy_spike",
+    "index": 3953
+  },
+  {
+    "timestamp": "2025-11-16 02:05:22",
+    "zone": "Quality Control",
+    "type": "temp_anomaly",
+    "index": 3960
+  },
+  {
+    "timestamp": "2025-11-16 12:05:22",
+    "zone": "Logistics",
+    "type": "temp_anomaly",
+    "index": 4031
+  },
+  {
+    "timestamp": "2025-11-16 21:05:22",
+    "zone": "General Assembly",
+    "type": "energy_spike",
+    "index": 4091
+  },
+  {
+    "timestamp": "2025-11-17 12:05:22",
+    "zone": "Powertrain Assembly",
+    "type": "efficiency_drop",
+    "index": 4197
+  },
+  {
+    "timestamp": "2025-11-17 13:05:22",
+    "zone": "Body Shop (BIW)",
+    "type": "energy_spike",
+    "index": 4201
+  },
+  {
+    "timestamp": "2025-11-17 17:05:22",
+    "zone": "Stamping Shop",
+    "type": "energy_spike",
+    "index": 4228
+  },
+  {
+    "timestamp": "2025-11-17 21:05:22",
+    "zone": "Logistics",
+    "type": "temp_anomaly",
+    "index": 4262
+  },
+  {
+    "timestamp": "2025-11-18 00:05:22",
+    "zone": "Stamping Shop",
+    "type": "temp_anomaly",
+    "index": 4277
+  },
+  {
+    "timestamp": "2025-11-18 08:05:22",
+    "zone": "Paint Shop",
+    "type": "temp_anomaly",
+    "index": 4335
+  },
+  {
+    "timestamp": "2025-11-19 05:05:22",
+    "zone": "Paint Shop",
+    "type": "energy_spike",
+    "index": 4482
+  },
+  {
+    "timestamp": "2025-11-19 07:05:22",
+    "zone": "Powertrain Assembly",
+    "type": "efficiency_drop",
+    "index": 4498
+  },
+  {
+    "timestamp": "2025-11-19 07:05:22",
+    "zone": "Quality Control",
+    "type": "temp_anomaly",
+    "index": 4499
+  },
+  {
+    "timestamp": "2025-11-19 09:05:22",
+    "zone": "Paint Shop",
+    "type": "energy_spike",
+    "index": 4510
+  },
+  {
+    "timestamp": "2025-11-19 09:05:22",
+    "zone": "Quality Control",
+    "type": "energy_spike",
+    "index": 4513
+  },
+  {
+    "timestamp": "2025-11-19 10:05:22",
+    "zone": "Body Shop (BIW)",
+    "type": "energy_spike",
+    "index": 4516
+  },
+  {
+    "timestamp": "2025-11-19 11:05:22",
+    "zone": "Paint Shop",
+    "type": "energy_spike",
+    "index": 4524
+  },
+  {
+    "timestamp": "2025-11-19 20:05:22",
+    "zone": "Powertrain Assembly",
+    "type": "energy_spike",
+    "index": 4589
+  },
+  {
+    "timestamp": "2025-11-20 00:05:22",
+    "zone": "Paint Shop",
+    "type": "temp_anomaly",
+    "index": 4615
+  },
+  {
+    "timestamp": "2025-11-20 02:05:22",
+    "zone": "Powertrain Assembly",
+    "type": "efficiency_drop",
+    "index": 4631
+  },
+  {
+    "timestamp": "2025-11-20 02:05:22",
+    "zone": "Quality Control",
+    "type": "energy_spike",
+    "index": 4632
+  },
+  {
+    "timestamp": "2025-11-20 06:05:22",
+    "zone": "Powertrain Assembly",
+    "type": "efficiency_drop",
+    "index": 4659
+  },
+  {
+    "timestamp": "2025-11-20 13:05:22",
+    "zone": "Quality Control",
+    "type": "energy_spike",
+    "index": 4709
+  },
+  {
+    "timestamp": "2025-11-20 18:05:22",
+    "zone": "Stamping Shop",
+    "type": "efficiency_drop",
+    "index": 4739
+  },
+  {
+    "timestamp": "2025-11-20 19:05:22",
+    "zone": "Paint Shop",
+    "type": "energy_spike",
+    "index": 4748
+  },
+  {
+    "timestamp": "2025-11-21 01:05:22",
+    "zone": "Powertrain Assembly",
+    "type": "efficiency_drop",
+    "index": 4792
+  },
+  {
+    "timestamp": "2025-11-21 02:05:22",
+    "zone": "Powertrain Assembly",
+    "type": "temp_anomaly",
+    "index": 4799
+  },
+  {
+    "timestamp": "2025-11-21 03:05:22",
+    "zone": "Powertrain Assembly",
+    "type": "efficiency_drop",
+    "index": 4806
+  },
+  {
+    "timestamp": "2025-11-21 04:05:22",
+    "zone": "Stamping Shop",
+    "type": "energy_spike",
+    "index": 4809
+  },
+  {
+    "timestamp": "2025-11-21 05:05:22",
+    "zone": "Powertrain Assembly",
+    "type": "energy_spike",
+    "index": 4820
+  },
+  {
+    "timestamp": "2025-11-21 09:05:22",
+    "zone": "Quality Control",
+    "type": "temp_anomaly",
+    "index": 4849
+  },
+  {
+    "timestamp": "2025-11-21 12:05:22",
+    "zone": "Body Shop (BIW)",
+    "type": "temp_anomaly",
+    "index": 4866
+  },
+  {
+    "timestamp": "2025-11-21 19:05:22",
+    "zone": "Body Shop (BIW)",
+    "type": "efficiency_drop",
+    "index": 4915
+  },
+  {
+    "timestamp": "2025-11-22 01:05:22",
+    "zone": "Stamping Shop",
+    "type": "energy_spike",
+    "index": 4956
+  },
+  {
+    "timestamp": "2025-11-22 03:05:22",
+    "zone": "Logistics",
+    "type": "temp_anomaly",
+    "index": 4976
+  },
+  {
+    "timestamp": "2025-11-22 05:05:22",
+    "zone": "Stamping Shop",
+    "type": "temp_anomaly",
+    "index": 4984
+  },
+  {
+    "timestamp": "2025-11-22 06:05:22",
+    "zone": "Paint Shop",
+    "type": "efficiency_drop",
+    "index": 4993
+  },
+  {
+    "timestamp": "2025-11-22 07:05:22",
+    "zone": "Powertrain Assembly",
+    "type": "energy_spike",
+    "index": 5002
+  },
+  {
+    "timestamp": "2025-11-22 10:05:22",
+    "zone": "Paint Shop",
+    "type": "temp_anomaly",
+    "index": 5021
+  }
+]

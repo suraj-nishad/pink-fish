@@ -1,0 +1,521 @@
+"""
+Digital Twin Simulation API Routes
+Allows users to experiment with plant configurations
+- Add/remove production lines
+- Modify zone parameters
+- Simulate "what-if" scenarios
+- Predict impact of changes
+"""
+
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel, Field
+from typing import List, Dict, Optional
+import pandas as pd
+import numpy as np
+from datetime import datetime
+import copy
+
+router = APIRouter(prefix="/api/simulation", tags=["Digital Twin Simulation"])
+
+# Base zone configurations
+BASE_ZONES = {
+    "Stamping Shop": {
+        "base_energy": 450,
+        "base_temp": 65,
+        "base_efficiency": 92,
+        "production_capacity": 100,
+        "co2_factor": 0.233
+    },
+    "Body Shop (BIW)": {
+        "base_energy": 800,
+        "base_temp": 55,
+        "base_efficiency": 89,
+        "production_capacity": 80,
+        "co2_factor": 0.233
+    },
+    "Paint Shop": {
+        "base_energy": 1200,
+        "base_temp": 185,
+        "base_efficiency": 85,
+        "production_capacity": 60,
+        "co2_factor": 0.233
+    },
+    "General Assembly": {
+        "base_energy": 680,
+        "base_temp": 25,
+        "base_efficiency": 88,
+        "production_capacity": 120,
+        "co2_factor": 0.233
+    },
+    "Powertrain Assembly": {
+        "base_energy": 550,
+        "base_temp": 35,
+        "base_efficiency": 90,
+        "production_capacity": 90,
+        "co2_factor": 0.233
+    },
+    "Quality Control": {
+        "base_energy": 320,
+        "base_temp": 22,
+        "base_efficiency": 95,
+        "production_capacity": 150,
+        "co2_factor": 0.233
+    },
+    "Logistics": {
+        "base_energy": 280,
+        "base_temp": 20,
+        "base_efficiency": 93,
+        "production_capacity": 200,
+        "co2_factor": 0.233
+    }
+}
+
+# Store simulation states
+simulation_store = {}
+
+# Pydantic Models
+
+class ProductionLine(BaseModel):
+    line_id: str
+    name: str
+    energy_multiplier: float = Field(1.0, description="Energy usage multiplier")
+    efficiency_modifier: float = Field(0.0, description="Efficiency percentage modifier")
+    production_capacity: int = Field(100, description="Units per hour")
+
+class ZoneModification(BaseModel):
+    zone_name: str
+    temperature_offset: Optional[float] = Field(None, description="Temperature change in °C")
+    efficiency_modifier: Optional[float] = Field(None, description="Efficiency percentage change")
+    energy_multiplier: Optional[float] = Field(None, description="Energy usage multiplier")
+    add_production_lines: Optional[List[ProductionLine]] = Field(None, description="Lines to add")
+    remove_line_ids: Optional[List[str]] = Field(None, description="Line IDs to remove")
+
+class SimulationRequest(BaseModel):
+    simulation_name: str = Field(..., description="Name for this simulation")
+    modifications: List[ZoneModification] = Field(..., description="Zone modifications to apply")
+    duration_hours: int = Field(24, ge=1, le=168, description="Simulation duration")
+
+class SimulationMetrics(BaseModel):
+    total_energy_kwh: float
+    total_cost_usd: float
+    total_co2_kg: float
+    avg_efficiency_pct: float
+    total_production_units: int
+
+class SimulationComparison(BaseModel):
+    baseline: SimulationMetrics
+    modified: SimulationMetrics
+    delta: Dict[str, float]
+    percent_change: Dict[str, float]
+
+class SimulationResult(BaseModel):
+    simulation_id: str
+    simulation_name: str
+    status: str
+    zones_modified: int
+    comparison: SimulationComparison
+    zone_details: List[Dict]
+    recommendations: List[str]
+    timestamp: str
+
+class WhatIfScenario(BaseModel):
+    scenario_name: str
+    description: str
+    zone: str
+    parameter: str
+    value_change: float
+
+class WhatIfResult(BaseModel):
+    scenario: WhatIfScenario
+    predicted_impact: Dict[str, float]
+    feasibility: str
+    risk_level: str
+    recommendation: str
+
+# Helper Functions
+
+def calculate_zone_metrics(zone_config, hours, production_lines=None):
+    """Calculate metrics for a zone configuration"""
+    metrics = {
+        'energy_kwh': 0,
+        'cost_usd': 0,
+        'co2_kg': 0,
+        'efficiency_pct': zone_config['base_efficiency'],
+        'production_units': 0
+    }
+    
+    # Base energy calculation
+    base_energy_per_hour = zone_config['base_energy']
+    
+    # Apply production line multipliers
+    line_multiplier = 1.0
+    efficiency_total_modifier = 0.0
+    capacity_total = zone_config['production_capacity']
+    
+    if production_lines:
+        for line in production_lines:
+            line_multiplier += (line['energy_multiplier'] - 1.0)
+            efficiency_total_modifier += line['efficiency_modifier']
+            capacity_total += line['production_capacity']
+    
+    # Calculate total metrics
+    hourly_energy = base_energy_per_hour * line_multiplier
+    metrics['energy_kwh'] = hourly_energy * hours
+    metrics['cost_usd'] = metrics['energy_kwh'] * 0.12
+    metrics['co2_kg'] = metrics['energy_kwh'] * zone_config['co2_factor']
+    metrics['efficiency_pct'] = min(100, zone_config['base_efficiency'] + efficiency_total_modifier)
+    metrics['production_units'] = int(capacity_total * hours * (metrics['efficiency_pct'] / 100))
+    
+    return metrics
+
+def apply_modifications(base_config, modifications):
+    """Apply modifications to base configuration"""
+    modified_config = copy.deepcopy(base_config)
+    
+    for mod in modifications:
+        zone = mod.zone_name
+        if zone not in modified_config:
+            continue
+        
+        # Apply temperature offset
+        if mod.temperature_offset is not None:
+            modified_config[zone]['base_temp'] += mod.temperature_offset
+            # Temperature affects energy (rough approximation)
+            if 'Paint' in zone:
+                energy_impact = mod.temperature_offset * 2.0  # Paint shop is temp-sensitive
+                modified_config[zone]['base_energy'] += energy_impact
+        
+        # Apply efficiency modifier
+        if mod.efficiency_modifier is not None:
+            modified_config[zone]['base_efficiency'] += mod.efficiency_modifier
+            # Clamp between 50 and 100
+            modified_config[zone]['base_efficiency'] = max(50, min(100, modified_config[zone]['base_efficiency']))
+        
+        # Apply energy multiplier
+        if mod.energy_multiplier is not None:
+            modified_config[zone]['base_energy'] *= mod.energy_multiplier
+        
+        # Add production lines
+        if mod.add_production_lines:
+            if 'production_lines' not in modified_config[zone]:
+                modified_config[zone]['production_lines'] = []
+            for line in mod.add_production_lines:
+                modified_config[zone]['production_lines'].append(line.dict())
+        
+        # Remove production lines
+        if mod.remove_line_ids and 'production_lines' in modified_config[zone]:
+            modified_config[zone]['production_lines'] = [
+                line for line in modified_config[zone]['production_lines']
+                if line['line_id'] not in mod.remove_line_ids
+            ]
+    
+    return modified_config
+
+# API Endpoints
+
+@router.post("/run", response_model=SimulationResult)
+def run_simulation(request: SimulationRequest):
+    """
+    Run a digital twin simulation with specified modifications
+    Compares baseline vs modified configuration
+    """
+    try:
+        # Generate simulation ID
+        sim_id = f"SIM-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
+        
+        # Calculate baseline metrics
+        baseline_metrics = {
+            'total_energy_kwh': 0,
+            'total_cost_usd': 0,
+            'total_co2_kg': 0,
+            'avg_efficiency_pct': 0,
+            'total_production_units': 0
+        }
+        
+        zone_count = 0
+        for zone_name, zone_config in BASE_ZONES.items():
+            metrics = calculate_zone_metrics(zone_config, request.duration_hours)
+            baseline_metrics['total_energy_kwh'] += metrics['energy_kwh']
+            baseline_metrics['total_cost_usd'] += metrics['cost_usd']
+            baseline_metrics['total_co2_kg'] += metrics['co2_kg']
+            baseline_metrics['avg_efficiency_pct'] += metrics['efficiency_pct']
+            baseline_metrics['total_production_units'] += metrics['production_units']
+            zone_count += 1
+        
+        baseline_metrics['avg_efficiency_pct'] /= zone_count
+        
+        # Apply modifications
+        modified_config = apply_modifications(BASE_ZONES, request.modifications)
+        
+        # Calculate modified metrics
+        modified_metrics = {
+            'total_energy_kwh': 0,
+            'total_cost_usd': 0,
+            'total_co2_kg': 0,
+            'avg_efficiency_pct': 0,
+            'total_production_units': 0
+        }
+        
+        zone_details = []
+        for zone_name, zone_config in modified_config.items():
+            production_lines = zone_config.get('production_lines', None)
+            metrics = calculate_zone_metrics(zone_config, request.duration_hours, production_lines)
+            
+            modified_metrics['total_energy_kwh'] += metrics['energy_kwh']
+            modified_metrics['total_cost_usd'] += metrics['cost_usd']
+            modified_metrics['total_co2_kg'] += metrics['co2_kg']
+            modified_metrics['avg_efficiency_pct'] += metrics['efficiency_pct']
+            modified_metrics['total_production_units'] += metrics['production_units']
+            
+            zone_details.append({
+                'zone': zone_name,
+                'energy_kwh': round(metrics['energy_kwh'], 2),
+                'cost_usd': round(metrics['cost_usd'], 2),
+                'efficiency_pct': round(metrics['efficiency_pct'], 2),
+                'production_units': metrics['production_units'],
+                'production_lines': len(production_lines) if production_lines else 0
+            })
+        
+        modified_metrics['avg_efficiency_pct'] /= zone_count
+        
+        # Calculate deltas
+        delta = {
+            'energy_kwh': modified_metrics['total_energy_kwh'] - baseline_metrics['total_energy_kwh'],
+            'cost_usd': modified_metrics['total_cost_usd'] - baseline_metrics['total_cost_usd'],
+            'co2_kg': modified_metrics['total_co2_kg'] - baseline_metrics['total_co2_kg'],
+            'efficiency_pct': modified_metrics['avg_efficiency_pct'] - baseline_metrics['avg_efficiency_pct'],
+            'production_units': modified_metrics['total_production_units'] - baseline_metrics['total_production_units']
+        }
+        
+        # Calculate percent changes
+        percent_change = {}
+        for key in delta.keys():
+            if baseline_metrics['total_' + key if key != 'efficiency_pct' and key != 'production_units' else 'avg_' + key if key == 'efficiency_pct' else 'total_' + key] != 0:
+                base_val = baseline_metrics['total_' + key if key != 'efficiency_pct' and key != 'production_units' else 'avg_' + key if key == 'efficiency_pct' else 'total_' + key]
+                percent_change[key] = round((delta[key] / base_val) * 100, 2)
+            else:
+                percent_change[key] = 0
+        
+        # Generate recommendations
+        recommendations = []
+        if delta['energy_kwh'] < 0:
+            recommendations.append(f"✅ Energy savings: {abs(delta['energy_kwh']):.2f} kWh ({abs(percent_change['energy_kwh']):.1f}% reduction)")
+        elif delta['energy_kwh'] > 0:
+            recommendations.append(f"⚠️ Energy increase: {delta['energy_kwh']:.2f} kWh ({percent_change['energy_kwh']:.1f}% increase)")
+        
+        if delta['production_units'] > 0:
+            recommendations.append(f"📈 Production increase: {delta['production_units']} units ({percent_change['production_units']:.1f}% improvement)")
+        
+        if delta['efficiency_pct'] > 0:
+            recommendations.append(f"⚡ Efficiency improvement: {delta['efficiency_pct']:.2f}%")
+        
+        if delta['cost_usd'] < -1000:
+            recommendations.append(f"💰 Significant cost savings: ${abs(delta['cost_usd']):.2f} over {request.duration_hours} hours")
+        
+        # Store simulation
+        simulation_store[sim_id] = {
+            'name': request.simulation_name,
+            'baseline': baseline_metrics,
+            'modified': modified_metrics,
+            'delta': delta,
+            'timestamp': datetime.utcnow().isoformat()
+        }
+        
+        return SimulationResult(
+            simulation_id=sim_id,
+            simulation_name=request.simulation_name,
+            status="completed",
+            zones_modified=len(request.modifications),
+            comparison=SimulationComparison(
+                baseline=SimulationMetrics(**baseline_metrics),
+                modified=SimulationMetrics(**modified_metrics),
+                delta=delta,
+                percent_change=percent_change
+            ),
+            zone_details=zone_details,
+            recommendations=recommendations,
+            timestamp=datetime.utcnow().isoformat()
+        )
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Simulation failed: {str(e)}")
+
+@router.post("/what-if", response_model=WhatIfResult)
+def what_if_analysis(scenario: WhatIfScenario):
+    """
+    Quick what-if analysis for a single parameter change
+    Predicts impact without running full simulation
+    """
+    try:
+        if scenario.zone not in BASE_ZONES:
+            raise HTTPException(status_code=404, detail=f"Zone '{scenario.zone}' not found")
+        
+        zone_config = BASE_ZONES[scenario.zone]
+        impact = {}
+        feasibility = "feasible"
+        risk_level = "low"
+        recommendation = ""
+        
+        # Analyze based on parameter
+        if scenario.parameter == "temperature":
+            # Temperature change impact
+            energy_impact = scenario.value_change * 2.0 if 'Paint' in scenario.zone else scenario.value_change * 0.5
+            impact['energy_change_kwh_per_hour'] = round(energy_impact, 2)
+            impact['cost_change_usd_per_hour'] = round(energy_impact * 0.12, 2)
+            impact['co2_change_kg_per_hour'] = round(energy_impact * 0.233, 2)
+            
+            if abs(scenario.value_change) > 20:
+                feasibility = "challenging"
+                risk_level = "high"
+                recommendation = "Large temperature changes may affect product quality and require equipment modifications"
+            elif abs(scenario.value_change) > 10:
+                risk_level = "medium"
+                recommendation = "Moderate temperature change - monitor quality metrics closely"
+            else:
+                recommendation = "Safe temperature adjustment - proceed with gradual implementation"
+        
+        elif scenario.parameter == "efficiency":
+            # Efficiency improvement impact
+            current_efficiency = zone_config['base_efficiency']
+            new_efficiency = current_efficiency + scenario.value_change
+            
+            if new_efficiency > 100:
+                feasibility = "not_feasible"
+                risk_level = "high"
+                recommendation = "Target efficiency exceeds 100% - not achievable"
+            elif new_efficiency < 50:
+                feasibility = "not_feasible"
+                risk_level = "high"
+                recommendation = "Target efficiency too low - indicates equipment failure"
+            else:
+                production_impact = scenario.value_change * zone_config['production_capacity'] * 0.01
+                impact['production_change_units_per_hour'] = round(production_impact, 1)
+                impact['efficiency_new_pct'] = round(new_efficiency, 2)
+                
+                if scenario.value_change > 0:
+                    recommendation = f"Efficiency improvement achievable through maintenance, training, or equipment upgrades"
+                else:
+                    recommendation = f"Efficiency decrease indicates potential issues - investigate root cause"
+        
+        elif scenario.parameter == "add_production_line":
+            # Adding production line impact
+            line_energy = zone_config['base_energy'] * 0.7  # New line is 70% of base
+            impact['energy_increase_kwh_per_hour'] = round(line_energy, 2)
+            impact['cost_increase_usd_per_hour'] = round(line_energy * 0.12, 2)
+            impact['production_increase_units_per_hour'] = round(zone_config['production_capacity'] * 0.8, 1)
+            
+            recommendation = "Adding production line increases capacity but requires space, capital investment, and workforce"
+            risk_level = "medium"
+        
+        else:
+            raise HTTPException(status_code=400, detail=f"Unknown parameter: {scenario.parameter}")
+        
+        return WhatIfResult(
+            scenario=scenario,
+            predicted_impact=impact,
+            feasibility=feasibility,
+            risk_level=risk_level,
+            recommendation=recommendation
+        )
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"What-if analysis failed: {str(e)}")
+
+@router.get("/templates")
+def get_simulation_templates():
+    """Get pre-configured simulation templates"""
+    return {
+        "templates": [
+            {
+                "name": "Add Paint Shop Production Line",
+                "description": "Simulate adding a second production line to Paint Shop",
+                "modifications": [
+                    {
+                        "zone_name": "Paint Shop",
+                        "add_production_lines": [
+                            {
+                                "line_id": "paint_line_2",
+                                "name": "Paint Line 2",
+                                "energy_multiplier": 1.7,
+                                "efficiency_modifier": -2.0,
+                                "production_capacity": 50
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "name": "Reduce Paint Shop Temperature",
+                "description": "Reduce oven temperature by 10°C for energy savings",
+                "modifications": [
+                    {
+                        "zone_name": "Paint Shop",
+                        "temperature_offset": -10,
+                        "efficiency_modifier": -1.5
+                    }
+                ]
+            },
+            {
+                "name": "Optimize Assembly Line",
+                "description": "Improve assembly efficiency through automation",
+                "modifications": [
+                    {
+                        "zone_name": "General Assembly",
+                        "efficiency_modifier": 5.0,
+                        "energy_multiplier": 1.1
+                    }
+                ]
+            },
+            {
+                "name": "Expand Body Shop Capacity",
+                "description": "Add robotic welding line to Body Shop",
+                "modifications": [
+                    {
+                        "zone_name": "Body Shop (BIW)",
+                        "add_production_lines": [
+                            {
+                                "line_id": "robotic_welding_3",
+                                "name": "Robotic Welding Line 3",
+                                "energy_multiplier": 1.5,
+                                "efficiency_modifier": 3.0,
+                                "production_capacity": 70
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+
+@router.get("/simulations")
+def list_simulations():
+    """List all stored simulations"""
+    return {
+        "simulations": [
+            {
+                "simulation_id": sim_id,
+                "name": data['name'],
+                "timestamp": data['timestamp'],
+                "energy_delta_kwh": round(data['delta']['energy_kwh'], 2),
+                "cost_delta_usd": round(data['delta']['cost_usd'], 2)
+            }
+            for sim_id, data in simulation_store.items()
+        ],
+        "total_count": len(simulation_store)
+    }
+
+@router.get("/simulations/{simulation_id}")
+def get_simulation(simulation_id: str):
+    """Get details of a specific simulation"""
+    if simulation_id not in simulation_store:
+        raise HTTPException(status_code=404, detail="Simulation not found")
+    
+    return simulation_store[simulation_id]
+
+@router.get("/zone-config")
+def get_zone_configurations():
+    """Get base zone configurations"""
+    return {
+        "zones": BASE_ZONES,
+        "total_zones": len(BASE_ZONES)
+    }

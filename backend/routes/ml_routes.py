@@ -21,16 +21,42 @@ from backend.ml_models import AnomalyDetector, EnergyForecaster, PredictiveMaint
 # Create router
 router = APIRouter(prefix="/api/ml", tags=["Machine Learning"])
 
-# Load trained models
+# Load trained models - auto-train if not found
 try:
     anomaly_detector = AnomalyDetector.load()
     energy_forecaster = EnergyForecaster.load()
     maintenance_model = PredictiveMaintenanceModel()
+    print("✅ ML models loaded from disk")
 except Exception as e:
-    print(f"Warning: Could not load ML models: {e}")
-    anomaly_detector = None
-    energy_forecaster = None
-    maintenance_model = None
+    print(f"⚠️  Could not load ML models: {e}")
+    print("🔄 Training models from scratch (this may take 30 seconds)...")
+    
+    try:
+        # Load training data
+        data_path = os.path.join(os.path.dirname(__file__), "..", "..", "data", "plant_data_30days.csv")
+        df_train = pd.read_csv(data_path, parse_dates=["timestamp"])
+        
+        # Train anomaly detector
+        anomaly_detector = AnomalyDetector()
+        anomaly_detector.train(df_train)
+        anomaly_detector.save()
+        print("✅ Anomaly detector trained and saved")
+        
+        # Train energy forecaster
+        energy_forecaster = EnergyForecaster()
+        energy_forecaster.train(df_train)
+        energy_forecaster.save()
+        print("✅ Energy forecaster trained and saved")
+        
+        # Predictive maintenance doesn't need training
+        maintenance_model = PredictiveMaintenanceModel()
+        print("✅ All ML models ready")
+        
+    except Exception as train_error:
+        print(f"❌ Error training models: {train_error}")
+        anomaly_detector = None
+        energy_forecaster = None
+        maintenance_model = None
 
 # Pydantic Models
 

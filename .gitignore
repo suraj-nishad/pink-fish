@@ -50,8 +50,8 @@ yarn-error.log*
 .pytest_cache/
 htmlcov/
 
-# ML Models (optional: uncomment to regenerate on each deployment)
-# backend/models/*.pkl
+# ML Models (excluded to reduce deployment size - will regenerate on startup)
+backend/models/*.pkl
 
 # Node (for future frontend)
 node_modules/
@@ -100,3 +100,4 @@ PROJECT_STATUS.md
 #vercel
 VERCEL_DEPLOYMENT.md
 vercel.json
+VERCEL_SIZE_FIX.md

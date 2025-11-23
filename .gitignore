@@ -80,12 +80,6 @@ build/
 *.md
 
 # Temporary documentation files (auto-generated)
-PROJECT_STATUS_FINAL.md
-API_TEST_RESULTS.md
-SETUP_COMPLETE_SUMMARY.md
-CLEANUP_SUMMARY.md
-server.log
-PROJECT_STATUS.md
 # Keep these documentation files:
 # - README.md
 # - QUICK_START.md
@@ -108,4 +102,18 @@ DEPLOYMENT_ALTERNATIVES.md
 RAILWAY_DEPLOYMENT.md
 API_ENDPOINTS_REFERENCE.md
 DEPLOY_CHECKLIST.md
+ML_MODELS_DOCUMENTATION.md
+test-watsonx-chat.html
+test-api-direct.html
+
+
+
+PROJECT_STATUS_FINAL.md
+API_TEST_RESULTS.md
+SETUP_COMPLETE_SUMMARY.md
+CLEANUP_SUMMARY.md
+server.log
+PROJECT_STATUS.md
+
+API_ENDPOINTS_REFERENCE.md
 ML_MODELS_DOCUMENTATION.md

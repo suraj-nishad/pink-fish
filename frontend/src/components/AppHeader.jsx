@@ -8,12 +8,20 @@ import {
 } from '@carbon/react';
 import { Notification, UserAvatar, Switcher } from '@carbon/icons-react';
 import './AppHeader.scss';
+import PinkFishLogo from './pink-fish logo.png';
 
 const AppHeader = () => {
   return (
     <Header aria-label="PlantOps Digital Twin">
-      <HeaderName href="/" prefix="IBM">
-        <span className="header-title">PlantOps Digital Twinz</span>
+      <HeaderName href="/" prefix="">
+        <img
+          src={PinkFishLogo}
+          alt="Pink Fish Logo"
+          className="pf-logo"
+          height={32}
+          width={32}
+        />
+        <span className="header-title">Digital Twin</span>
       </HeaderName>
       
       <HeaderNavigation aria-label="Main Navigation">

@@ -104,7 +104,7 @@ const Dashboard = () => {
         <div className="dashboard-header__title">
           <DashboardIcon size={32} />
           <div>
-            <h1>Manufacturing Plant Overview</h1>
+            <h1>Car Plant Overview</h1>
             <p>Real-time monitoring of all production zones</p>
           </div>
         </div>

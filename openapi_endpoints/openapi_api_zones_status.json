@@ -122,29 +122,6 @@
         ],
         "title": "ZoneStatusModel"
       },
-      "AlertModel": {
-        "properties": {
-          "type": {
-            "type": "string",
-            "title": "Type"
-          },
-          "message": {
-            "type": "string",
-            "title": "Message"
-          },
-          "timestamp": {
-            "type": "string",
-            "title": "Timestamp"
-          }
-        },
-        "type": "object",
-        "required": [
-          "type",
-          "message",
-          "timestamp"
-        ],
-        "title": "AlertModel"
-      },
       "ZoneMetricsModel": {
         "properties": {
           "energy_kwh": {
@@ -188,6 +165,29 @@
           "cost_usd"
         ],
         "title": "ZoneMetricsModel"
+      },
+      "AlertModel": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "message",
+          "timestamp"
+        ],
+        "title": "AlertModel"
       }
     }
   }

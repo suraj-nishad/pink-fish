@@ -61,54 +61,6 @@
   },
   "components": {
     "schemas": {
-      "WhatIfResult": {
-        "properties": {
-          "scenario": {
-            "$ref": "#/components/schemas/WhatIfScenario"
-          },
-          "predicted_impact": {
-            "additionalProperties": {
-              "type": "number"
-            },
-            "type": "object",
-            "title": "Predicted Impact"
-          },
-          "feasibility": {
-            "type": "string",
-            "title": "Feasibility"
-          },
-          "risk_level": {
-            "type": "string",
-            "title": "Risk Level"
-          },
-          "recommendation": {
-            "type": "string",
-            "title": "Recommendation"
-          }
-        },
-        "type": "object",
-        "required": [
-          "scenario",
-          "predicted_impact",
-          "feasibility",
-          "risk_level",
-          "recommendation"
-        ],
-        "title": "WhatIfResult"
-      },
-      "HTTPValidationError": {
-        "properties": {
-          "detail": {
-            "items": {
-              "$ref": "#/components/schemas/ValidationError"
-            },
-            "type": "array",
-            "title": "Detail"
-          }
-        },
-        "type": "object",
-        "title": "HTTPValidationError"
-      },
       "WhatIfScenario": {
         "properties": {
           "scenario_name": {
@@ -181,6 +133,19 @@
           }
         ]
       },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
       "ValidationError": {
         "properties": {
           "loc": {
@@ -213,6 +178,41 @@
           "type"
         ],
         "title": "ValidationError"
+      },
+      "WhatIfResult": {
+        "properties": {
+          "scenario": {
+            "$ref": "#/components/schemas/WhatIfScenario"
+          },
+          "predicted_impact": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Predicted Impact"
+          },
+          "feasibility": {
+            "type": "string",
+            "title": "Feasibility"
+          },
+          "risk_level": {
+            "type": "string",
+            "title": "Risk Level"
+          },
+          "recommendation": {
+            "type": "string",
+            "title": "Recommendation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scenario",
+          "predicted_impact",
+          "feasibility",
+          "risk_level",
+          "recommendation"
+        ],
+        "title": "WhatIfResult"
       }
     }
   }

@@ -61,19 +61,6 @@
   },
   "components": {
     "schemas": {
-      "HTTPValidationError": {
-        "properties": {
-          "detail": {
-            "items": {
-              "$ref": "#/components/schemas/ValidationError"
-            },
-            "type": "array",
-            "title": "Detail"
-          }
-        },
-        "type": "object",
-        "title": "HTTPValidationError"
-      },
       "MaintenanceRequest": {
         "properties": {
           "zone_name": {
@@ -121,6 +108,47 @@
           }
         ]
       },
+      "MaintenanceResponse": {
+        "properties": {
+          "ticket_id": {
+            "type": "string",
+            "title": "Ticket Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "assigned_to": {
+            "type": "string",
+            "title": "Assigned To"
+          },
+          "due_date": {
+            "type": "string",
+            "title": "Due Date"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticket_id",
+          "status",
+          "assigned_to",
+          "due_date"
+        ],
+        "title": "MaintenanceResponse"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
       "ValidationError": {
         "properties": {
           "loc": {
@@ -153,34 +181,6 @@
           "type"
         ],
         "title": "ValidationError"
-      },
-      "MaintenanceResponse": {
-        "properties": {
-          "ticket_id": {
-            "type": "string",
-            "title": "Ticket Id"
-          },
-          "status": {
-            "type": "string",
-            "title": "Status"
-          },
-          "assigned_to": {
-            "type": "string",
-            "title": "Assigned To"
-          },
-          "due_date": {
-            "type": "string",
-            "title": "Due Date"
-          }
-        },
-        "type": "object",
-        "required": [
-          "ticket_id",
-          "status",
-          "assigned_to",
-          "due_date"
-        ],
-        "title": "MaintenanceResponse"
       }
     }
   }

@@ -61,57 +61,6 @@
   },
   "components": {
     "schemas": {
-      "EnergyForecastResponse": {
-        "properties": {
-          "zone": {
-            "type": "string",
-            "title": "Zone"
-          },
-          "forecast_hours": {
-            "type": "integer",
-            "title": "Forecast Hours"
-          },
-          "forecast": {
-            "items": {
-              "$ref": "#/components/schemas/ForecastPoint"
-            },
-            "type": "array",
-            "title": "Forecast"
-          },
-          "total_predicted_energy": {
-            "type": "number",
-            "title": "Total Predicted Energy"
-          },
-          "total_predicted_cost": {
-            "type": "number",
-            "title": "Total Predicted Cost"
-          },
-          "total_predicted_co2": {
-            "type": "number",
-            "title": "Total Predicted Co2"
-          },
-          "confidence_level": {
-            "type": "string",
-            "title": "Confidence Level"
-          },
-          "timestamp": {
-            "type": "string",
-            "title": "Timestamp"
-          }
-        },
-        "type": "object",
-        "required": [
-          "zone",
-          "forecast_hours",
-          "forecast",
-          "total_predicted_energy",
-          "total_predicted_cost",
-          "total_predicted_co2",
-          "confidence_level",
-          "timestamp"
-        ],
-        "title": "EnergyForecastResponse"
-      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -124,6 +73,39 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
       },
       "EnergyForecastRequest": {
         "properties": {
@@ -188,38 +170,56 @@
           }
         ]
       },
-      "ValidationError": {
+      "EnergyForecastResponse": {
         "properties": {
-          "loc": {
+          "zone": {
+            "type": "string",
+            "title": "Zone"
+          },
+          "forecast_hours": {
+            "type": "integer",
+            "title": "Forecast Hours"
+          },
+          "forecast": {
             "items": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "integer"
-                }
-              ]
+              "$ref": "#/components/schemas/ForecastPoint"
             },
             "type": "array",
-            "title": "Location"
+            "title": "Forecast"
           },
-          "msg": {
-            "type": "string",
-            "title": "Message"
+          "total_predicted_energy": {
+            "type": "number",
+            "title": "Total Predicted Energy"
           },
-          "type": {
+          "total_predicted_cost": {
+            "type": "number",
+            "title": "Total Predicted Cost"
+          },
+          "total_predicted_co2": {
+            "type": "number",
+            "title": "Total Predicted Co2"
+          },
+          "confidence_level": {
             "type": "string",
-            "title": "Error Type"
+            "title": "Confidence Level"
+          },
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
           }
         },
         "type": "object",
         "required": [
-          "loc",
-          "msg",
-          "type"
+          "zone",
+          "forecast_hours",
+          "forecast",
+          "total_predicted_energy",
+          "total_predicted_cost",
+          "total_predicted_co2",
+          "confidence_level",
+          "timestamp"
         ],
-        "title": "ValidationError"
+        "title": "EnergyForecastResponse"
       },
       "ForecastPoint": {
         "properties": {

@@ -61,6 +61,50 @@
   },
   "components": {
     "schemas": {
+      "ChatOpsResponse": {
+        "properties": {
+          "query": {
+            "type": "string",
+            "title": "Query"
+          },
+          "response": {
+            "type": "string",
+            "title": "Response"
+          },
+          "related_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Related Actions"
+          },
+          "confidence": {
+            "type": "number",
+            "title": "Confidence"
+          }
+        },
+        "type": "object",
+        "required": [
+          "query",
+          "response",
+          "related_actions",
+          "confidence"
+        ],
+        "title": "ChatOpsResponse"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
       "ChatOpsRequest": {
         "properties": {
           "query": {
@@ -98,50 +142,6 @@
             "user": "operator_123"
           }
         ]
-      },
-      "HTTPValidationError": {
-        "properties": {
-          "detail": {
-            "items": {
-              "$ref": "#/components/schemas/ValidationError"
-            },
-            "type": "array",
-            "title": "Detail"
-          }
-        },
-        "type": "object",
-        "title": "HTTPValidationError"
-      },
-      "ChatOpsResponse": {
-        "properties": {
-          "query": {
-            "type": "string",
-            "title": "Query"
-          },
-          "response": {
-            "type": "string",
-            "title": "Response"
-          },
-          "related_actions": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Related Actions"
-          },
-          "confidence": {
-            "type": "number",
-            "title": "Confidence"
-          }
-        },
-        "type": "object",
-        "required": [
-          "query",
-          "response",
-          "related_actions",
-          "confidence"
-        ],
-        "title": "ChatOpsResponse"
       },
       "ValidationError": {
         "properties": {

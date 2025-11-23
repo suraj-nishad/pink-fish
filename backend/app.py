@@ -3,7 +3,7 @@ PlantOps Digital Twin Dashboard - FastAPI Backend
 Automotive manufacturing plant monitoring with IBM watsonx Orchestrate integration
 """
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Path
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, field_validator
@@ -616,12 +616,21 @@ def schedule_maintenance(request: MaintenanceRequest):
 
 @app.get("/api/zones/{zone_id}/history", tags=["Plant Monitoring"])
 def get_zone_history(
-    zone_id: str,
+    zone_id: str = Path(..., description="Zone identifier. Valid values: 'stamping', 'body_shop', 'paint', 'assembly', 'powertrain', 'quality', 'logistics'", example="paint"),
     hours: int = Query(24, ge=1, le=168, description="Hours of history to retrieve")
 ):
     """
     Get historical data for a specific zone
     Useful for trend analysis and visualization
+    
+    Valid zone_id values:
+    - stamping (Stamping Shop)
+    - body_shop (Body Shop / BIW)
+    - paint (Paint Shop)
+    - assembly (General Assembly)
+    - powertrain (Powertrain Assembly)
+    - quality (Quality Control)
+    - logistics (Logistics)
     """
     try:
         # Filter data for zone
@@ -689,7 +698,7 @@ def get_plant_kpis(
         total_production = production_data['production_units'].sum() if len(production_data) > 0 else 0
         
         # Zone breakdown
-        zone_breakdown = recent_data.groupby('zone_name').agg({
+        zone_breakdown = recent_data.groupby('zone').agg({  # CSV column is 'zone' not 'zone_name'
             'energy_kwh': 'sum',
             'co2_kg': 'sum',
             'cost_usd': 'sum'

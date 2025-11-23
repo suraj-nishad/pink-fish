@@ -61,73 +61,6 @@
   },
   "components": {
     "schemas": {
-      "HTTPValidationError": {
-        "properties": {
-          "detail": {
-            "items": {
-              "$ref": "#/components/schemas/ValidationError"
-            },
-            "type": "array",
-            "title": "Detail"
-          }
-        },
-        "type": "object",
-        "title": "HTTPValidationError"
-      },
-      "SimulationResult": {
-        "properties": {
-          "simulation_id": {
-            "type": "string",
-            "title": "Simulation Id"
-          },
-          "simulation_name": {
-            "type": "string",
-            "title": "Simulation Name"
-          },
-          "status": {
-            "type": "string",
-            "title": "Status"
-          },
-          "zones_modified": {
-            "type": "integer",
-            "title": "Zones Modified"
-          },
-          "comparison": {
-            "$ref": "#/components/schemas/SimulationComparison"
-          },
-          "zone_details": {
-            "items": {
-              "additionalProperties": true,
-              "type": "object"
-            },
-            "type": "array",
-            "title": "Zone Details"
-          },
-          "recommendations": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Recommendations"
-          },
-          "timestamp": {
-            "type": "string",
-            "title": "Timestamp"
-          }
-        },
-        "type": "object",
-        "required": [
-          "simulation_id",
-          "simulation_name",
-          "status",
-          "zones_modified",
-          "comparison",
-          "zone_details",
-          "recommendations",
-          "timestamp"
-        ],
-        "title": "SimulationResult"
-      },
       "SimulationRequest": {
         "properties": {
           "simulation_name": {
@@ -195,39 +128,6 @@
             "simulation_name": "Reduce energy consumption in Body Shop"
           }
         ]
-      },
-      "ValidationError": {
-        "properties": {
-          "loc": {
-            "items": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "integer"
-                }
-              ]
-            },
-            "type": "array",
-            "title": "Location"
-          },
-          "msg": {
-            "type": "string",
-            "title": "Message"
-          },
-          "type": {
-            "type": "string",
-            "title": "Error Type"
-          }
-        },
-        "type": "object",
-        "required": [
-          "loc",
-          "msg",
-          "type"
-        ],
-        "title": "ValidationError"
       },
       "ZoneModification": {
         "properties": {
@@ -351,37 +251,105 @@
           }
         ]
       },
-      "SimulationComparison": {
+      "HTTPValidationError": {
         "properties": {
-          "baseline": {
-            "$ref": "#/components/schemas/SimulationMetrics"
-          },
-          "modified": {
-            "$ref": "#/components/schemas/SimulationMetrics"
-          },
-          "delta": {
-            "additionalProperties": {
-              "type": "number"
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
             },
-            "type": "object",
-            "title": "Delta"
-          },
-          "percent_change": {
-            "additionalProperties": {
-              "type": "number"
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
             },
-            "type": "object",
-            "title": "Percent Change"
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
           }
         },
         "type": "object",
         "required": [
-          "baseline",
-          "modified",
-          "delta",
-          "percent_change"
+          "loc",
+          "msg",
+          "type"
         ],
-        "title": "SimulationComparison"
+        "title": "ValidationError"
+      },
+      "SimulationResult": {
+        "properties": {
+          "simulation_id": {
+            "type": "string",
+            "title": "Simulation Id"
+          },
+          "simulation_name": {
+            "type": "string",
+            "title": "Simulation Name"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "zones_modified": {
+            "type": "integer",
+            "title": "Zones Modified"
+          },
+          "comparison": {
+            "$ref": "#/components/schemas/SimulationComparison"
+          },
+          "zone_details": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Zone Details"
+          },
+          "recommendations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Recommendations"
+          },
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "simulation_id",
+          "simulation_name",
+          "status",
+          "zones_modified",
+          "comparison",
+          "zone_details",
+          "recommendations",
+          "timestamp"
+        ],
+        "title": "SimulationResult"
       },
       "ProductionLine": {
         "properties": {
@@ -437,6 +405,38 @@
             "production_capacity": 60
           }
         ]
+      },
+      "SimulationComparison": {
+        "properties": {
+          "baseline": {
+            "$ref": "#/components/schemas/SimulationMetrics"
+          },
+          "modified": {
+            "$ref": "#/components/schemas/SimulationMetrics"
+          },
+          "delta": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Delta"
+          },
+          "percent_change": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Percent Change"
+          }
+        },
+        "type": "object",
+        "required": [
+          "baseline",
+          "modified",
+          "delta",
+          "percent_change"
+        ],
+        "title": "SimulationComparison"
       },
       "SimulationMetrics": {
         "properties": {

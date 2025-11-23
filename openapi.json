@@ -521,7 +521,7 @@
           "Plant Monitoring"
         ],
         "summary": "Get Zone History",
-        "description": "Get historical data for a specific zone\nUseful for trend analysis and visualization",
+        "description": "Get historical data for a specific zone\nUseful for trend analysis and visualization\n\nValid zone_id values:\n- stamping (Stamping Shop)\n- body_shop (Body Shop / BIW)\n- paint (Paint Shop)\n- assembly (General Assembly)\n- powertrain (Powertrain Assembly)\n- quality (Quality Control)\n- logistics (Logistics)",
         "operationId": "get_zone_history_api_zones__zone_id__history_get",
         "parameters": [
           {
@@ -530,8 +530,11 @@
             "required": true,
             "schema": {
               "type": "string",
+              "description": "Zone identifier. Valid values: 'stamping', 'body_shop', 'paint', 'assembly', 'powertrain', 'quality', 'logistics'",
               "title": "Zone Id"
-            }
+            },
+            "description": "Zone identifier. Valid values: 'stamping', 'body_shop', 'paint', 'assembly', 'powertrain', 'quality', 'logistics'",
+            "example": "paint"
           },
           {
             "name": "hours",

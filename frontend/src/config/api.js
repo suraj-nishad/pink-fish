@@ -4,15 +4,14 @@
  */
 
 // Get API URL from environment variable
-// In development: uses Vite dev server proxy (/)
-// In production: uses VITE_API_URL from Railway environment variable
+// Always uses VITE_API_URL if set, otherwise falls back to relative path for proxy
 const getApiUrl = () => {
-  // In production, use the environment variable
-  if (import.meta.env.PROD && import.meta.env.VITE_API_URL) {
+  // Use VITE_API_URL if it's set (works in both dev and production)
+  if (import.meta.env.VITE_API_URL) {
     return import.meta.env.VITE_API_URL;
   }
   
-  // In development, use relative path (Vite proxy handles it)
+  // Fallback to relative path (Vite proxy handles it in dev)
   return '';
 };
 

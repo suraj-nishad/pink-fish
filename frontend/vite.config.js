@@ -6,6 +6,15 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 3000,
+    // Allow Railway preview host and local dev hosts to bypass host header blocking.
+    // Using explicit list for dev; can be switched to 'all' if broader access needed.
+    allowedHosts: [
+      'localhost',
+      '127.0.0.1',
+      'pink-fish-ui.up.railway.app',
+      // Match any Railway generated subdomain (subdomain.railway.app)
+      '.railway.app'
+    ],
     proxy: {
       '/api': {
         target: 'http://localhost:8000',
@@ -20,12 +29,11 @@ export default defineConfig({
   preview: {
     host: '0.0.0.0',
     strictPort: false,
-    allowedHosts: [
-      'pink-fish-ui.up.railway.app',
-      '.railway.app',
-      'localhost',
-      '127.0.0.1'
-    ],
+    // Allow all hosts in preview to avoid Railway host blocking.
+    // If you want to restrict again, replace 'all' with an explicit array similar to server.allowedHosts.
+    allowedHosts: 'all',
+    // Ensure the preview server binds to the PORT Railway provides if not passed via CLI.
+    port: parseInt(process.env.PORT || '8080', 10),
     proxy: {
       '/api': {
         target: process.env.VITE_API_URL || 'http://localhost:8000',

@@ -1,17 +1,25 @@
 .chat-toggle-btn {
-  position: fixed;
-  bottom: 2rem;
-  left: 2rem;     /* moved to left */
-  right: auto;
-  z-index: 9999;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  position: fixed !important;
+  bottom: 2rem !important;
+  right: 2rem !important;
+  left: auto !important;
+  z-index: 9999 !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important;
+  
+  // Override any Carbon button positioning
+  &.cds--btn {
+    position: fixed !important;
+    bottom: 2rem !important;
+    right: 2rem !important;
+    left: auto !important;
+  }
 }
 
 .chat-client {
   position: fixed;
   bottom: 2rem;
-  left: 2rem;     /* moved to left */
-  right: auto;
+  right: 2rem;
+  left: auto;
   width: 400px;
   height: 600px;
   max-height: calc(100vh - 4rem);
@@ -170,16 +178,16 @@
     width: calc(100vw - 2rem);
     height: calc(100vh - 4rem);
     bottom: 1rem;
-    left: 1rem;    /* moved to left */
-    right: auto;
+    right: 1rem;
+    left: auto;
     max-width: none;
     max-height: calc(100vh - 2rem);
   }
   
   .chat-toggle-btn {
     bottom: 1rem;
-    left: 1rem;    /* moved to left */
-    right: auto;
+    right: 1rem;
+    left: auto;
   }
 }
 // Ensure chat doesn't interfere with page scrolling

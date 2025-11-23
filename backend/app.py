@@ -6,8 +6,8 @@ Automotive manufacturing plant monitoring with IBM watsonx Orchestrate integrati
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field
-from typing import List, Dict, Any, Optional
+from pydantic import BaseModel, Field, field_validator
+from typing import List, Dict, Any, Optional, Union
 import pandas as pd
 import os
 import json
@@ -312,9 +312,15 @@ def get_zones_status():
 
 class EnergyAnalysisRequest(BaseModel):
     """Request model for energy analysis"""
-    zones: Optional[List[str]] = Field(
+    zones: Optional[Union[List[str], str]] = Field(
         default=None,
-        description="List of zone names to analyze. Leave empty or null to analyze all zones.",
+        description=(
+            "Array of zone names to analyze. Must be a JSON array of strings. "
+            "Valid zone names: 'Stamping Shop', 'Body Shop (BIW)', 'Paint Shop', "
+            "'General Assembly', 'Powertrain Assembly', 'Quality Control', 'Logistics'. "
+            "To analyze ALL zones: omit this field entirely or set to null. "
+            "DO NOT use the string 'all' - use null or omit the field."
+        ),
         json_schema_extra={
             "examples": [
                 ["Paint Shop"],
@@ -326,11 +332,29 @@ class EnergyAnalysisRequest(BaseModel):
     )
     timeframe: str = Field(
         default="last_24h",
-        description="Analysis timeframe (last_24h, last_7d, last_30d)",
+        description="Analysis timeframe: 'last_24h', 'last_7d', or 'last_30d'",
         json_schema_extra={
             "examples": ["last_24h", "last_7d", "last_30d"]
         }
     )
+    
+    @field_validator('zones', mode='before')
+    @classmethod
+    def normalize_zones(cls, v):
+        """
+        Temporary workaround for watsonx agent sending "all" instead of null.
+        This allows the API to work while agent configuration is being fixed.
+        TODO: Remove this workaround once agent is properly trained.
+        """
+        if isinstance(v, str):
+            # Handle special "all zones" keywords
+            if v.lower() in ["all", "*", "all zones", "all_zones"]:
+                return None  # Convert to None to analyze all zones
+            else:
+                # Single zone sent as string - wrap in array
+                # This handles cases where agent sends: "zones": "Paint Shop"
+                return [v]
+        return v
 
     model_config = {
         "json_schema_extra": {
@@ -344,7 +368,6 @@ class EnergyAnalysisRequest(BaseModel):
                     "timeframe": "last_7d"
                 },
                 {
-                    "zones": None,
                     "timeframe": "last_24h"
                 }
             ]

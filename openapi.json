@@ -1,3 +1,6 @@
+✅ ML models loaded from disk
+✅ ML and simulation routes loaded
+✅ Loaded 5040 records from /Users/suraj/digital-twin/backend/../data/plant_data_30days.csv
 {
   "openapi": "3.1.0",
   "info": {
@@ -937,11 +940,14 @@
                 "type": "array"
               },
               {
+                "type": "string"
+              },
+              {
                 "type": "null"
               }
             ],
             "title": "Zones",
-            "description": "List of zone names to analyze. Leave empty or null to analyze all zones.",
+            "description": "Array of zone names to analyze. Must be a JSON array of strings. Valid zone names: 'Stamping Shop', 'Body Shop (BIW)', 'Paint Shop', 'General Assembly', 'Powertrain Assembly', 'Quality Control', 'Logistics'. To analyze ALL zones: omit this field entirely or set to null. DO NOT use the string 'all' - use null or omit the field.",
             "examples": [
               [
                 "Paint Shop"
@@ -961,7 +967,7 @@
           "timeframe": {
             "type": "string",
             "title": "Timeframe",
-            "description": "Analysis timeframe (last_24h, last_7d, last_30d)",
+            "description": "Analysis timeframe: 'last_24h', 'last_7d', or 'last_30d'",
             "default": "last_24h",
             "examples": [
               "last_24h",

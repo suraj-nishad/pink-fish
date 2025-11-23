@@ -250,7 +250,7 @@ def detect_anomalies(data_df):
         
         if baseline_energy and current_energy > baseline_energy * (1 + CONFIG["ENERGY_THRESHOLD_RED"]):
             anomalies.append({
-                "zone": zone_data['zone_name'].iloc[0],
+                "zone": zone_data['zone'].iloc[0],  # CSV column is 'zone' not 'zone_name'
                 "type": "energy_spike",
                 "severity": "high",
                 "current_value": float(current_energy),
@@ -642,7 +642,7 @@ def get_zone_history(
         
         return JSONResponse(content={
             "zone_id": zone_id,
-            "zone_name": zone_data['zone_name'].iloc[0],
+            "zone_name": zone_data['zone'].iloc[0],  # CSV column is 'zone' not 'zone_name'
             "hours": hours,
             "data_points": len(history),
             "history": history

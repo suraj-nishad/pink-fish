@@ -30,6 +30,12 @@ const Dashboard = () => {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    if (activeZone) {
+      fetchHistory();
+    }
+  }, [activeZone, timeframe]);
+
   const fetchZoneStatus = async () => {
     try {
       const response = await axios.get('/api/zones/status');
@@ -50,41 +56,38 @@ const Dashboard = () => {
     }
   };
 
+  const fetchHistory = async () => {
+    if (!activeZone) return;
+
+    setHistoryLoading(true);
+    setHistoryError(null);
+
+    try {
+      const response = await axios.get(`/api/zones/${activeZone.zone_id}/history`, {
+        params: { hours: parseInt(timeframe) }
+      });
+      // API returns object with history array in the 'history' property
+      setHistoryData(response.data.history);
+    } catch (err) {
+      console.error('Error fetching history:', err);
+      setHistoryError('Failed to load trend data. Please try again.');
+    } finally {
+      setHistoryLoading(false);
+    }
+  };
+
   const openTrends = (zone) => {
     setActiveZone(zone);
-    setHistoryData(null);
-    setHistoryError(null);
   };
 
   const closeTrends = () => {
     setActiveZone(null);
+    setHistoryData(null);
+    setHistoryError(null);
   };
 
-  useEffect(() => {
-    const fetchHistory = async () => {
-      if (!activeZone) return;
-      setHistoryLoading(true);
-      setHistoryError(null);
-      try {
-        const response = await axios.get(`/api/zones/${activeZone.zone_id}/history?hours=${timeframe}`);
-        setHistoryData(response.data.history);
-      } catch (err) {
-        console.error('Error fetching zone history:', err);
-        setHistoryError('Failed to load historical data. Please try again.');
-      } finally {
-        setHistoryLoading(false);
-      }
-    };
-    fetchHistory();
-  }, [activeZone, timeframe]);
-
   const retryHistory = () => {
-    if (activeZone) {
-      setHistoryData(null);
-      setHistoryError(null);
-      // Force re-trigger by setting a timestamp
-      setTimeframe(prev => prev);
-    }
+    fetchHistory();
   };
 
   if (loading) {
@@ -176,7 +179,7 @@ const Dashboard = () => {
       )}
 
       {/* Zone Cards Grid */}
-  <Grid className="zones-grid">
+      <Grid className="zones-grid">
         {zones.length === 0 && !loading ? (
           <Column lg={16}>
             <InlineNotification
@@ -194,7 +197,8 @@ const Dashboard = () => {
           ))
         )}
       </Grid>
-      
+
+      {/* Trends Drawer */}
       <TrendsDrawer
         zone={activeZone}
         onClose={closeTrends}

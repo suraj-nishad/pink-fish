@@ -29,9 +29,13 @@ export default defineConfig({
   preview: {
     host: '0.0.0.0',
     strictPort: false,
-    // Allow all hosts in preview to avoid Railway host blocking.
-    // If you want to restrict again, replace 'all' with an explicit array similar to server.allowedHosts.
-    allowedHosts: 'all',
+    // Explicit list of hosts permitted in preview (Railway + local dev).
+    // Avoid using broad 'all' for tighter control.
+    allowedHosts: [
+      'pink-fish-ui.up.railway.app', // deployed UI domain
+      'localhost',
+      '127.0.0.1'
+    ],
     // Ensure the preview server binds to the PORT Railway provides if not passed via CLI.
     port: parseInt(process.env.PORT || '8080', 10),
     proxy: {

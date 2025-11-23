@@ -18,8 +18,9 @@ export default defineConfig({
     }
   },
   preview: {
-    host: true, // Allow all hosts - required for Railway deployment
+    host: '0.0.0.0',
     strictPort: false,
+    allowedHosts: ['pink-fish-ui.up.railway.app'],
     proxy: {
       '/api': {
         target: process.env.VITE_API_URL || 'http://localhost:8000',

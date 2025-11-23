@@ -39,7 +39,7 @@ const ChatClient = () => {
     setIsLoading(true);
 
     try {
-      const response = await axios.get('https://pink-fish-chat.up.railway.app/chat/v2', {
+      const response = await axios.get('https://pink-fish-chat-wrapper.vercel.app/chat/v2', {
         params: {
           query: currentInput
         }

@@ -20,7 +20,12 @@ export default defineConfig({
   preview: {
     host: '0.0.0.0',
     strictPort: false,
-    allowedHosts: ['pink-fish-ui.up.railway.app'],
+    allowedHosts: [
+      'pink-fish-ui.up.railway.app',
+      '.railway.app',
+      'localhost',
+      '127.0.0.1'
+    ],
     proxy: {
       '/api': {
         target: process.env.VITE_API_URL || 'http://localhost:8000',

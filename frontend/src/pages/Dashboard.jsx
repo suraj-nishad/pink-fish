@@ -13,6 +13,7 @@ import TrendsDrawer from '../components/TrendsDrawer';
 import axios from 'axios';
 import { API_ENDPOINTS } from '../config/api';
 import './Dashboard.scss';
+import ChatClient from '../components/ChatClient';
 
 const Dashboard = () => {
   const [zones, setZones] = useState([]);
@@ -208,6 +209,9 @@ const Dashboard = () => {
         error={historyError}
         onRetry={retryHistory}
       />
+
+      {/* Chat Client Widget */}
+      <ChatClient />
     </div>
   );
 };

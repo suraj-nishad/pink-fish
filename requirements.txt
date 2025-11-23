@@ -9,6 +9,9 @@ fastapi>=0.104.0
 uvicorn[standard]>=0.24.0
 pydantic>=2.0.0
 
+# Background Tasks & Scheduling
+apscheduler>=3.10.0
+
 # HTTP Client (for watsonx Orchestrate integration)
 httpx>=0.25.0
 requests>=2.31.0

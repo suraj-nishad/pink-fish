@@ -13,7 +13,7 @@ const AppHeader = () => {
   return (
     <Header aria-label="PlantOps Digital Twin">
       <HeaderName href="/" prefix="IBM">
-        <span className="header-title">PlantOps Digital Twin</span>
+        <span className="header-title">PlantOps Digital Twinz</span>
       </HeaderName>
       
       <HeaderNavigation aria-label="Main Navigation">

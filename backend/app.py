@@ -23,6 +23,14 @@ except Exception as e:
     print(f"⚠️ ML routes not available: {e}")
     ML_ROUTES_AVAILABLE = False
 
+# Import scheduler for automatic data updates
+try:
+    from backend.scheduler import start_scheduler, stop_scheduler, get_scheduler_status
+    SCHEDULER_AVAILABLE = True
+except Exception as e:
+    print(f"⚠️ Scheduler not available: {e}")
+    SCHEDULER_AVAILABLE = False
+
 # Note: This API is designed to be CALLED BY watsonx Orchestrate
 # No need to import watsonx client - watsonx will import our OpenAPI spec
 # and call our endpoints as tools/skills in workflows
@@ -45,6 +53,28 @@ app.add_middleware(
     allow_methods=["*"],  # Allow all methods
     allow_headers=["*"],  # Allow all headers
 )
+
+# Startup event: Start the background scheduler
+@app.on_event("startup")
+async def startup_event():
+    """Start background tasks when FastAPI starts"""
+    print("🚀 Starting PlantOps Digital Twin API...")
+    
+    if SCHEDULER_AVAILABLE:
+        start_scheduler()
+        print("✅ Background data updater initialized")
+    else:
+        print("⚠️ Background scheduler not available - data updates must be run manually")
+
+# Shutdown event: Stop the scheduler gracefully
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Clean up background tasks when FastAPI shuts down"""
+    print("🛑 Shutting down PlantOps Digital Twin API...")
+    
+    if SCHEDULER_AVAILABLE:
+        stop_scheduler()
+        print("✅ Background scheduler stopped")
 
 # Include ML and simulation routers
 if ML_ROUTES_AVAILABLE:
@@ -284,7 +314,7 @@ def root():
 @app.get("/health", tags=["Health"])
 def health_check():
     """Detailed health check"""
-    return {
+    health_data = {
         "status": "healthy",
         "database": "connected" if len(df) > 0 else "disconnected",
         "records_loaded": len(df),
@@ -292,6 +322,13 @@ def health_check():
         "api_mode": "tools_for_orchestrate",  # This API provides tools FOR watsonx to call
         "timestamp": datetime.utcnow().isoformat()
     }
+    
+    # Add scheduler status if available
+    if SCHEDULER_AVAILABLE:
+        scheduler_status = get_scheduler_status()
+        health_data["scheduler"] = scheduler_status
+    
+    return health_data
 
 @app.get("/api/zones/status", response_model=PlantStatusResponse, tags=["Plant Monitoring"])
 def get_zones_status():

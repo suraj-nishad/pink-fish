@@ -168,5 +168,14 @@
   
   > div {
     margin-bottom: 2rem;
+    // Allow cards to expand naturally when trends shown
+    height: auto;
+    min-height: 380px; // preserve initial visual baseline
+  }
+  
+  .cds--col {
+    // Remove fixed height so expanded cards push layout down
+    height: auto;
+    min-height: 380px;
   }
 }

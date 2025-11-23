@@ -9,6 +9,7 @@ import {
 } from '@carbon/react';
 import { Dashboard as DashboardIcon, DataBase, Activity } from '@carbon/icons-react';
 import ZoneCard from '../components/ZoneCard';
+import TrendsDrawer from '../components/TrendsDrawer';
 import axios from 'axios';
 import './Dashboard.scss';
 
@@ -17,6 +18,11 @@ const Dashboard = () => {
   const [plantStatus, setPlantStatus] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [activeZone, setActiveZone] = useState(null);
+  const [timeframe, setTimeframe] = useState('24');
+  const [historyData, setHistoryData] = useState(null);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [historyError, setHistoryError] = useState(null);
 
   useEffect(() => {
     fetchZoneStatus();
@@ -41,6 +47,43 @@ const Dashboard = () => {
       console.error('Error fetching zones:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const openTrends = (zone) => {
+    setActiveZone(zone);
+    setHistoryData(null);
+    setHistoryError(null);
+  };
+
+  const closeTrends = () => {
+    setActiveZone(null);
+  };
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      if (!activeZone) return;
+      setHistoryLoading(true);
+      setHistoryError(null);
+      try {
+        const response = await axios.get(`/api/zones/${activeZone.zone_id}/history?hours=${timeframe}`);
+        setHistoryData(response.data.history);
+      } catch (err) {
+        console.error('Error fetching zone history:', err);
+        setHistoryError('Failed to load historical data. Please try again.');
+      } finally {
+        setHistoryLoading(false);
+      }
+    };
+    fetchHistory();
+  }, [activeZone, timeframe]);
+
+  const retryHistory = () => {
+    if (activeZone) {
+      setHistoryData(null);
+      setHistoryError(null);
+      // Force re-trigger by setting a timestamp
+      setTimeframe(prev => prev);
     }
   };
 
@@ -133,7 +176,7 @@ const Dashboard = () => {
       )}
 
       {/* Zone Cards Grid */}
-      <Grid className="zones-grid">
+  <Grid className="zones-grid">
         {zones.length === 0 && !loading ? (
           <Column lg={16}>
             <InlineNotification
@@ -146,11 +189,22 @@ const Dashboard = () => {
         ) : (
           zones.map((zone) => (
             <Column key={zone.zone_id} lg={4} md={4} sm={4}>
-              <ZoneCard zone={zone} />
+              <ZoneCard zone={zone} onViewTrends={openTrends} />
             </Column>
           ))
         )}
       </Grid>
+      
+      <TrendsDrawer
+        zone={activeZone}
+        onClose={closeTrends}
+        timeframe={timeframe}
+        setTimeframe={setTimeframe}
+        history={historyData}
+        loading={historyLoading}
+        error={historyError}
+        onRetry={retryHistory}
+      />
     </div>
   );
 };

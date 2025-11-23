@@ -8,8 +8,10 @@
 .app-content {
   flex: 1;
   background: #161616;
+  /* Offset fixed Carbon header (default ~3rem / 48px). Add a bit extra to clear border */
+  padding-top: 3.25rem;
   
   @media (max-width: 768px) {
-    padding: 0;
+    padding-top: 3rem; /* maintain clearance on mobile */
   }
 }

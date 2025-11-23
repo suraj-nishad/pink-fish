@@ -1,0 +1,34 @@
+.trend-chart {
+  background: #262626;
+  border-radius: 4px;
+  padding: 1rem;
+  margin-top: 1rem;
+
+  &__title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #f4f4f4;
+    margin: 0 0 1rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  &--empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    color: #8d8d8d;
+    font-size: 0.875rem;
+  }
+}
+
+// Recharts overrides for dark theme
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: #393939;
+}
+
+.recharts-legend-item-text {
+  color: #f4f4f4 !important;
+}

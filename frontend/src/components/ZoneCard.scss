@@ -1,17 +1,28 @@
+// Simplified wrapper (no flip)
+.zone-card-wrapper {
+  width: 100%;
+  min-height: 380px;
+  position: relative;
+}
+
 .zone-card {
-  height: 100%;
-  padding: 2rem;
+  width: 100%;
+  padding: 1.5rem;
   background: #262626;
   border: 1px solid #393939;
   border-radius: 4px;
-  transition: all 0.3s cubic-bezier(0.2, 0, 0.38, 0.9);
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
   
-  &:hover {
-    background: #2d2d2d;
-    border-color: #525252;
-    transform: translateY(-4px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5);
+  // Override Carbon Tile defaults
+  &.cds--tile {
+    min-height: unset;
+    height: 100%;
   }
+  
+  // removed front/back specifics
 
   &--green {
     border-left: 4px solid #42be65;
@@ -43,8 +54,8 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 2rem;
-    padding-bottom: 1rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
     border-bottom: 1px solid #393939;
   }
 
@@ -55,7 +66,7 @@
 
     h3 {
       margin: 0;
-      font-size: 1.25rem;
+      font-size: 1.1rem;
       font-weight: 400;
       color: #f4f4f4;
       letter-spacing: 0;
@@ -65,16 +76,16 @@
   &__metrics {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-    margin-bottom: 2rem;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
   }
 
   &__alerts {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    margin-bottom: 1.5rem;
-    padding: 1rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
     background: rgba(218, 30, 40, 0.1);
     border-radius: 4px;
     border: 1px solid rgba(218, 30, 40, 0.3);
@@ -83,7 +94,7 @@
   &__footer {
     display: flex;
     justify-content: space-between;
-    padding-top: 1.5rem;
+    padding-top: 1rem;
     border-top: 1px solid #393939;
     font-size: 0.875rem;
     gap: 1rem;
@@ -108,13 +119,21 @@
       font-weight: 400;
     }
   }
+
+  &__actions {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: flex-end;
+  }
 }
+
+// Removed flip-specific pointer event rules
 
 .metric {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 0.75rem;
+  gap: 0.75rem;
+  padding: 0.5rem;
   background: rgba(255, 255, 255, 0.02);
   border-radius: 4px;
   transition: background 0.2s ease;
@@ -131,12 +150,12 @@
   &-info {
     display: flex;
     flex-direction: column;
-    gap: 0.375rem;
+    gap: 0.25rem;
     flex: 1;
   }
 
   &-label {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     color: #c6c6c6;
     text-transform: uppercase;
     letter-spacing: 0.32px;
@@ -144,7 +163,7 @@
   }
 
   &-value {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 300;
     color: #f4f4f4;
     line-height: 1;

@@ -1,5 +1,5 @@
-// Import IBM Carbon styles (using simpler CSS approach)
-@import '@carbon/react/scss/reset';
+// Import IBM Carbon styles
+@use '@carbon/react';
 
 :root {
   --color-green: #24a148;

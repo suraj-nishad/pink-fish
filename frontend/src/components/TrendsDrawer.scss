@@ -1,0 +1,172 @@
+.trends-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+  z-index: 1090;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.trends-drawer {
+  position: fixed;
+  top: 3rem; /* Offset for Carbon header height (48px) */
+  right: 0;
+  height: calc(100vh - 3rem); /* Adjust height to fit below header */
+  width: 0;
+  background: #262626;
+  border-left: 1px solid #393939;
+  box-shadow: -6px 0 24px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+  z-index: 1100;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.35s cubic-bezier(0.4, 0.0, 0.2, 1);
+  
+  &--open {
+    width: 450px;
+    
+    @media (max-width: 768px) {
+      width: 100%;
+    }
+  }
+}
+
+.trends-drawer__content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1.5rem;
+  box-sizing: border-box;
+  opacity: 0;
+  animation: slideIn 0.35s ease 0.1s forwards;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.trends-drawer__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #393939;
+  flex-shrink: 0;
+  
+  h3 {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 400;
+    color: #f4f4f4;
+    letter-spacing: 0;
+  }
+}
+
+.trends-drawer__controls {
+  margin-bottom: 1.25rem;
+  flex-shrink: 0;
+  
+  .cds--select {
+    max-width: 100%;
+  }
+  
+  .cds--label {
+    color: #c6c6c6;
+    font-size: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .cds--select-input {
+    background: #2d2d2d;
+    color: #f4f4f4;
+    border-color: #525252;
+    
+    &:focus {
+      outline: 2px solid #0f62fe;
+      outline-offset: -2px;
+    }
+  }
+}
+
+.trends-drawer__body {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  
+  /* Custom scrollbar for dark theme */
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: #1e1e1e;
+    border-radius: 4px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #525252;
+    border-radius: 4px;
+    
+    &:hover {
+      background: #6f6f6f;
+    }
+  }
+}
+
+.trends-drawer__loading {
+  background: #2d2d2d;
+  padding: 1.5rem;
+  border-radius: 4px;
+  margin-top: 1rem;
+}
+
+.trends-drawer__error {
+  padding: 1.25rem;
+  background: rgba(218, 30, 40, 0.1);
+  border: 1px solid rgba(218, 30, 40, 0.3);
+  border-radius: 4px;
+  text-align: center;
+  margin-top: 1rem;
+  
+  p {
+    margin: 0 0 1rem 0;
+    color: #ff8389;
+    font-size: 0.875rem;
+  }
+  
+  button {
+    color: #78a9ff;
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+}
+
+.trends-drawer__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  padding: 2rem;
+  text-align: center;
+  
+  p {
+    margin: 0;
+    color: #8d8d8d;
+    font-size: 0.875rem;
+  }
+}

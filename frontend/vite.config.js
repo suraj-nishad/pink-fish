@@ -17,6 +17,26 @@ export default defineConfig({
       }
     }
   },
+  preview: {
+    port: 3000,
+    host: '0.0.0.0',
+    strictPort: false,
+    allowedHosts: [
+      'pink-fish-ui.up.railway.app',
+      '.railway.app', // Allow all Railway subdomains
+      'localhost',
+    ],
+    proxy: {
+      '/api': {
+        target: process.env.VITE_API_URL || 'http://localhost:8000',
+        changeOrigin: true,
+      },
+      '/health': {
+        target: process.env.VITE_API_URL || 'http://localhost:8000',
+        changeOrigin: true,
+      }
+    }
+  },
   build: {
     outDir: 'dist',
     sourcemap: false,

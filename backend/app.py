@@ -310,18 +310,65 @@ def get_zones_status():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching zone status: {str(e)}")
 
+class EnergyAnalysisRequest(BaseModel):
+    """Request model for energy analysis"""
+    zones: Optional[List[str]] = Field(
+        default=None,
+        description="List of zone names to analyze. Leave empty or null to analyze all zones.",
+        json_schema_extra={
+            "examples": [
+                ["Paint Shop"],
+                ["Paint Shop", "Body Shop (BIW)"],
+                ["Stamping Shop", "Paint Shop", "General Assembly"],
+                None
+            ]
+        }
+    )
+    timeframe: str = Field(
+        default="last_24h",
+        description="Analysis timeframe (last_24h, last_7d, last_30d)",
+        json_schema_extra={
+            "examples": ["last_24h", "last_7d", "last_30d"]
+        }
+    )
+
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "zones": ["Paint Shop"],
+                    "timeframe": "last_24h"
+                },
+                {
+                    "zones": ["Paint Shop", "Body Shop (BIW)", "General Assembly"],
+                    "timeframe": "last_7d"
+                },
+                {
+                    "zones": None,
+                    "timeframe": "last_24h"
+                }
+            ]
+        }
+    }
+
 @app.post("/api/analyze-energy", response_model=EnergyAnalysisResponse, tags=["AI Analysis"])
-def analyze_energy(
-    zones: List[str] = Query(..., description="Zones to analyze (e.g., ['Paint Shop', 'Assembly'])"),
-    timeframe: str = Query("last_24h", description="Analysis timeframe")
-):
+def analyze_energy(request: EnergyAnalysisRequest):
     """
     Trigger energy analysis workflow via IBM watsonx Orchestrate
     Analyzes energy consumption patterns and provides AI-powered recommendations
+    
+    Args:
+        request: Energy analysis request with zones (optional) and timeframe
+        
+    Returns:
+        Energy analysis with hotspots, recommendations, and impact metrics
     """
     try:
+        # Use all zones if none specified
+        zones_to_analyze = request.zones if request.zones else df['zone'].unique().tolist()
+        
         # Filter data for specified zones
-        zone_data = df[df['zone'].isin(zones)]
+        zone_data = df[df['zone'].isin(zones_to_analyze)]
         
         if len(zone_data) == 0:
             raise HTTPException(status_code=404, detail="No data found for specified zones")
@@ -372,10 +419,10 @@ def analyze_energy(
         }
         
         return EnergyAnalysisResponse(
-            hotspots=hotspots if hotspots else zones,
+            hotspots=hotspots if hotspots else zones_to_analyze,
             recommendations=recommendations if recommendations else [
                 RecommendationModel(
-                    zone=zones[0],
+                    zone=zones_to_analyze[0] if zones_to_analyze else "All Zones",
                     action="Continue monitoring - no immediate issues detected",
                     priority="low",
                     estimated_savings=0.0,

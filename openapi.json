@@ -395,36 +395,18 @@
           "AI Analysis"
         ],
         "summary": "Analyze Energy",
-        "description": "Trigger energy analysis workflow via IBM watsonx Orchestrate\nAnalyzes energy consumption patterns and provides AI-powered recommendations",
+        "description": "Trigger energy analysis workflow via IBM watsonx Orchestrate\nAnalyzes energy consumption patterns and provides AI-powered recommendations\n\nArgs:\n    request: Energy analysis request with zones (optional) and timeframe\n    \nReturns:\n    Energy analysis with hotspots, recommendations, and impact metrics",
         "operationId": "analyze_energy_api_analyze_energy_post",
-        "parameters": [
-          {
-            "name": "zones",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "description": "Zones to analyze (e.g., ['Paint Shop', 'Assembly'])",
-              "title": "Zones"
-            },
-            "description": "Zones to analyze (e.g., ['Paint Shop', 'Assembly'])"
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnergyAnalysisRequest"
+              }
+            }
           },
-          {
-            "name": "timeframe",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "description": "Analysis timeframe",
-              "default": "last_24h",
-              "title": "Timeframe"
-            },
-            "description": "Analysis timeframe"
-          }
-        ],
+          "required": true
+        },
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -943,6 +925,73 @@
           "COST_PER_KWH"
         ],
         "title": "ConfigModel"
+      },
+      "EnergyAnalysisRequest": {
+        "properties": {
+          "zones": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Zones",
+            "description": "List of zone names to analyze. Leave empty or null to analyze all zones.",
+            "examples": [
+              [
+                "Paint Shop"
+              ],
+              [
+                "Paint Shop",
+                "Body Shop (BIW)"
+              ],
+              [
+                "Stamping Shop",
+                "Paint Shop",
+                "General Assembly"
+              ],
+              null
+            ]
+          },
+          "timeframe": {
+            "type": "string",
+            "title": "Timeframe",
+            "description": "Analysis timeframe (last_24h, last_7d, last_30d)",
+            "default": "last_24h",
+            "examples": [
+              "last_24h",
+              "last_7d",
+              "last_30d"
+            ]
+          }
+        },
+        "type": "object",
+        "title": "EnergyAnalysisRequest",
+        "description": "Request model for energy analysis",
+        "examples": [
+          {
+            "timeframe": "last_24h",
+            "zones": [
+              "Paint Shop"
+            ]
+          },
+          {
+            "timeframe": "last_7d",
+            "zones": [
+              "Paint Shop",
+              "Body Shop (BIW)",
+              "General Assembly"
+            ]
+          },
+          {
+            "timeframe": "last_24h"
+          }
+        ]
       },
       "EnergyAnalysisResponse": {
         "properties": {

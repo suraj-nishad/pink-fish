@@ -8,7 +8,9 @@ Allows users to experiment with plant configurations
 """
 
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
+from typing import List, Dict, Optional, Union
+import json
 from typing import List, Dict, Optional
 import pandas as pd
 import numpy as np
@@ -139,8 +141,73 @@ class ZoneModification(BaseModel):
 class SimulationRequest(BaseModel):
     simulation_name: str = Field(..., description="Descriptive name for this simulation scenario", 
                                   examples=["Add second Paint Shop line", "Reduce assembly temperature", "Q1 2026 capacity increase"])
-    modifications: List[ZoneModification] = Field(..., description="Array of zone modifications to simulate. Each modification must include 'zone_name' and at least one parameter change.")
+    modifications: Union[List[ZoneModification], str] = Field(..., description="Array of zone modifications to simulate. Must be a JSON array. Each modification must include 'zone_name' and at least one parameter change (capacity_increase, temperature_offset, efficiency_modifier, energy_multiplier, or add_production_lines).")
     duration_hours: int = Field(24, ge=1, le=168, description="Number of hours to simulate (1-168). Use 720 for 30-day simulation, 168 for 1-week simulation.")
+    
+    @field_validator('modifications', mode='before')
+    @classmethod
+    def normalize_modifications(cls, v):
+        """
+        Temporary workaround for watsonx agent sending modifications as JSON string.
+        Converts string to proper array and handles parameter/value format.
+        TODO: Remove once agent is properly trained.
+        """
+        # If it's a string, try to parse it as JSON
+        if isinstance(v, str):
+            try:
+                parsed = json.loads(v)
+                v = parsed if isinstance(parsed, list) else [parsed]
+            except json.JSONDecodeError:
+                raise ValueError("modifications must be a valid JSON array")
+        
+        # Ensure it's a list
+        if not isinstance(v, list):
+            v = [v]
+        
+        # Normalize each modification
+        normalized = []
+        for mod in v:
+            if isinstance(mod, dict):
+                # Handle generic parameter/value format
+                if 'parameter' in mod and 'value' in mod:
+                    param = mod['parameter'].lower()
+                    value = mod['value']
+                    zone_name = mod.get('zone_name', mod.get('zone', ''))
+                    
+                    # Convert generic parameters to specific fields
+                    normalized_mod = {'zone_name': zone_name}
+                    
+                    if param in ['production_lines', 'capacity', 'lines']:
+                        # Adding production lines - use capacity_increase
+                        # If value is 2, that means double capacity (100% increase)
+                        if isinstance(value, (int, float)) and value > 0:
+                            capacity_pct = (value - 1) * 100 if value < 10 else value
+                            normalized_mod['capacity_increase'] = capacity_pct
+                            # Adding capacity typically increases energy and reduces efficiency
+                            normalized_mod['energy_multiplier'] = 1.0 + (capacity_pct / 100.0)
+                            normalized_mod['efficiency_modifier'] = -(capacity_pct / 10.0)
+                    elif param in ['temperature', 'temp']:
+                        normalized_mod['temperature_offset'] = value
+                    elif param == 'efficiency':
+                        normalized_mod['efficiency_modifier'] = value
+                    elif param in ['energy', 'power']:
+                        # If value is percentage, convert to multiplier
+                        if abs(value) < 1:
+                            normalized_mod['energy_multiplier'] = 1.0 + value
+                        else:
+                            normalized_mod['energy_multiplier'] = value
+                    else:
+                        # Unknown parameter, pass through original
+                        normalized_mod = mod
+                    
+                    normalized.append(normalized_mod)
+                else:
+                    # Already in correct format
+                    normalized.append(mod)
+            else:
+                normalized.append(mod)
+        
+        return normalized
     
     model_config = {
         "json_schema_extra": {
@@ -150,9 +217,9 @@ class SimulationRequest(BaseModel):
                     "modifications": [
                         {
                             "zone_name": "Paint Shop",
-                            "capacity_increase": 50,
+                            "capacity_increase": 100,
                             "efficiency_modifier": -10,
-                            "energy_multiplier": 1.5
+                            "energy_multiplier": 2.0
                         }
                     ],
                     "duration_hours": 720
@@ -200,11 +267,104 @@ class WhatIfScenario(BaseModel):
                                examples=["Reduce Paint Shop Temperature", "Increase Assembly Efficiency"])
     description: str = Field(..., description="Detailed description of the scenario", 
                             examples=["Test impact of reducing oven temperature by 10°C", "Improve efficiency through automation"])
-    zone: str = Field(..., description="Zone name to test. Valid zones: 'Stamping Shop', 'Body Shop (BIW)', 'Paint Shop', 'General Assembly', 'Powertrain Assembly', 'Quality Control', 'Logistics'",
+    zone_name: str = Field(..., description="Zone name to test. Valid zones: 'Stamping Shop', 'Body Shop (BIW)', 'Paint Shop', 'General Assembly', 'Powertrain Assembly', 'Quality Control', 'Logistics'",
                      examples=["Paint Shop", "Body Shop (BIW)", "General Assembly"])
     parameter: str = Field(..., description="Parameter to modify. Valid parameters: 'temperature', 'energy', 'efficiency', 'capacity', 'production_rate'",
                           examples=["temperature", "energy", "efficiency"])
     value_change: float = Field(..., description="Amount to change the parameter by (positive or negative). For temperature: degrees Celsius, For efficiency: percentage points, For energy: multiplier (e.g., -0.2 = 20% reduction)")
+    
+    @field_validator('zone_name', mode='before')
+    @classmethod
+    def normalize_zone_name(cls, v):
+        """
+        Normalize zone name - handle watsonx sending JSON strings
+        What-if scenarios require a specific zone
+        """
+        if v is None:
+            raise ValueError("zone_name is required for what-if scenarios - please specify which zone to analyze")
+        
+        # Handle JSON string format from watsonx
+        if isinstance(v, str):
+            v = v.strip()
+            # Try to parse as JSON if it looks like a JSON structure
+            if v.startswith('"') or v.startswith('['):
+                try:
+                    import json
+                    v = json.loads(v)
+                except:
+                    pass
+        
+        # Reject "all" keyword - what-if scenarios need specific zones
+        if isinstance(v, str) and v.lower() in ['all', 'all zones', '*']:
+            raise ValueError("What-if scenarios require a specific zone - cannot simulate 'all zones' at once")
+        
+        return v
+    
+    @field_validator('parameter', mode='before')
+    @classmethod
+    def normalize_parameter(cls, v):
+        """
+        Normalize parameter name - handle watsonx sending JSON strings or variations
+        """
+        if v is None:
+            raise ValueError("parameter is required - specify what to modify (temperature, energy, efficiency, capacity, production_rate)")
+        
+        # Handle JSON string format
+        if isinstance(v, str):
+            v = v.strip()
+            if v.startswith('"'):
+                try:
+                    import json
+                    v = json.loads(v)
+                except:
+                    pass
+            
+            # Normalize common variations
+            v_lower = v.lower().replace(' ', '_').replace('-', '_')
+            param_map = {
+                'temp': 'temperature',
+                'temps': 'temperature',
+                'oven_temp': 'temperature',
+                'power': 'energy',
+                'consumption': 'energy',
+                'eff': 'efficiency',
+                'cap': 'capacity',
+                'production': 'production_rate',
+                'prod_rate': 'production_rate',
+                'output': 'production_rate'
+            }
+            
+            if v_lower in param_map:
+                return param_map[v_lower]
+        
+        return v
+    
+    @field_validator('value_change', mode='before')
+    @classmethod
+    def parse_value_change(cls, v):
+        """
+        Parse value_change - handle watsonx sending strings or various formats
+        """
+        if v is None:
+            raise ValueError("value_change is required - specify how much to change the parameter")
+        
+        # Handle JSON string format
+        if isinstance(v, str):
+            v = v.strip()
+            if v.startswith('"'):
+                try:
+                    import json
+                    v = json.loads(v)
+                except:
+                    pass
+            
+            # Try to convert to float
+            try:
+                return float(v)
+            except ValueError:
+                raise ValueError(f"value_change must be a number, got: {v}")
+        
+        return float(v)
     
     model_config = {
         "json_schema_extra": {
@@ -212,14 +372,14 @@ class WhatIfScenario(BaseModel):
                 {
                     "scenario_name": "Reduce Paint Shop Temperature",
                     "description": "Test impact of reducing oven temperature by 10°C to save energy",
-                    "zone": "Paint Shop",
+                    "zone_name": "Paint Shop",
                     "parameter": "temperature",
                     "value_change": -10
                 },
                 {
                     "scenario_name": "Improve Assembly Efficiency",
                     "description": "Test impact of 5% efficiency improvement through automation",
-                    "zone": "General Assembly",
+                    "zone_name": "General Assembly",
                     "parameter": "efficiency",
                     "value_change": 5
                 }
@@ -467,10 +627,10 @@ def what_if_analysis(scenario: WhatIfScenario):
     Predicts impact without running full simulation
     """
     try:
-        if scenario.zone not in BASE_ZONES:
-            raise HTTPException(status_code=404, detail=f"Zone '{scenario.zone}' not found")
+        if scenario.zone_name not in BASE_ZONES:
+            raise HTTPException(status_code=404, detail=f"Zone '{scenario.zone_name}' not found")
         
-        zone_config = BASE_ZONES[scenario.zone]
+        zone_config = BASE_ZONES[scenario.zone_name]
         impact = {}
         feasibility = "feasible"
         risk_level = "low"
@@ -479,7 +639,7 @@ def what_if_analysis(scenario: WhatIfScenario):
         # Analyze based on parameter
         if scenario.parameter == "temperature":
             # Temperature change impact
-            energy_impact = scenario.value_change * 2.0 if 'Paint' in scenario.zone else scenario.value_change * 0.5
+            energy_impact = scenario.value_change * 2.0 if 'Paint' in scenario.zone_name else scenario.value_change * 0.5
             impact['energy_change_kwh_per_hour'] = round(energy_impact, 2)
             impact['cost_change_usd_per_hour'] = round(energy_impact * 0.12, 2)
             impact['co2_change_kg_per_hour'] = round(energy_impact * 0.233, 2)

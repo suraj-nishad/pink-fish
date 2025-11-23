@@ -1,0 +1,40 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "PlantOps Digital Twin Dashboard APIs - List Simulations",
+    "description": "List all stored simulations",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://pink-fish-production.up.railway.app",
+      "description": "Production Server"
+    },
+    {
+      "url": "http://127.0.0.1:8000",
+      "description": "Local Development Server"
+    }
+  ],
+  "paths": {
+    "/api/simulation/simulations": {
+      "get": {
+        "tags": [
+          "Digital Twin Simulation"
+        ],
+        "summary": "List Simulations",
+        "description": "List all stored simulations",
+        "operationId": "list_simulations_api_simulation_simulations_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

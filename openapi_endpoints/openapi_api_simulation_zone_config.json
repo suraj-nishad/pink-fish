@@ -1,0 +1,40 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "PlantOps Digital Twin Dashboard APIs - Get Zone Configurations",
+    "description": "Get base zone configurations",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://pink-fish-production.up.railway.app",
+      "description": "Production Server"
+    },
+    {
+      "url": "http://127.0.0.1:8000",
+      "description": "Local Development Server"
+    }
+  ],
+  "paths": {
+    "/api/simulation/zone-config": {
+      "get": {
+        "tags": [
+          "Digital Twin Simulation"
+        ],
+        "summary": "Get Zone Configurations",
+        "description": "Get base zone configurations",
+        "operationId": "get_zone_configurations_api_simulation_zone_config_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

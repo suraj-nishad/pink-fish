@@ -7,8 +7,8 @@ ML-Powered API Routes for Digital Twin
 """
 
 from fastapi import APIRouter, HTTPException, Query
-from pydantic import BaseModel, Field
-from typing import List, Dict, Any, Optional
+from pydantic import BaseModel, Field, field_validator
+from typing import List, Dict, Any, Optional, Union
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
@@ -61,20 +61,43 @@ except Exception as e:
 # Pydantic Models
 
 class AnomalyDetectionRequest(BaseModel):
-    zone: Optional[str] = Field(None, description="Specific zone to analyze (e.g., 'Paint Shop'), or None for all zones", 
-                                 examples=["Paint Shop", "Body Shop (BIW)", "Assembly"])
+    zone_name: Optional[str] = Field(
+        None, 
+        description="Specific zone to analyze (e.g., 'Paint Shop'), or omit/null for all zones. Valid zones: 'Stamping Shop', 'Body Shop (BIW)', 'Paint Shop', 'General Assembly', 'Powertrain Assembly', 'Quality Control', 'Logistics'", 
+        examples=["Paint Shop", "Body Shop (BIW)", "General Assembly", None]
+    )
     hours: int = Field(24, ge=1, le=168, description="Hours of historical data to analyze (1-168)")
+    
+    @field_validator('zone_name', mode='before')
+    @classmethod
+    def normalize_zone_name(cls, v):
+        """
+        Normalize zone_name field to handle various input formats from watsonx.
+        Handles: 'zone', 'zone_name', null, 'all', empty string
+        """
+        if v is None or v == '':
+            return None
+        if isinstance(v, str):
+            # Handle "all zones" keywords
+            if v.lower() in ['all', 'all zones', '*']:
+                return None
+            # Return zone name as-is
+            return v
+        return v
     
     model_config = {
         "json_schema_extra": {
             "examples": [
                 {
-                    "zone": "Paint Shop",
+                    "zone_name": "Paint Shop",
                     "hours": 24
                 },
                 {
-                    "zone": None,
+                    "zone_name": "Body Shop (BIW)",
                     "hours": 48
+                },
+                {
+                    "hours": 24
                 }
             ]
         }
@@ -96,23 +119,41 @@ class AnomalyDetectionResponse(BaseModel):
     timestamp: str
 
 class EnergyForecastRequest(BaseModel):
-    zone: str = Field(..., description="Zone name to forecast energy consumption", 
-                      examples=["Paint Shop", "Body Shop (BIW)", "General Assembly"])
+    zone_name: str = Field(
+        ..., 
+        description="Zone name to forecast energy consumption. Valid zones: 'Stamping Shop', 'Body Shop (BIW)', 'Paint Shop', 'General Assembly', 'Powertrain Assembly', 'Quality Control', 'Logistics'", 
+        examples=["Paint Shop", "Body Shop (BIW)", "General Assembly"]
+    )
     hours_ahead: int = Field(24, ge=1, le=168, description="Number of hours to forecast ahead (1-168)")
     current_temp: Optional[float] = Field(None, description="Current temperature in °C (optional, uses latest if not provided)")
     current_efficiency: Optional[float] = Field(None, description="Current efficiency percentage (optional, uses latest if not provided)")
+    
+    @field_validator('zone_name', mode='before')
+    @classmethod
+    def normalize_zone_name(cls, v):
+        """
+        Normalize zone_name field to handle various input formats from watsonx.
+        """
+        if v is None or v == '':
+            raise ValueError("zone_name is required for energy forecasting")
+        if isinstance(v, str):
+            # Handle "all zones" - not supported for forecasting
+            if v.lower() in ['all', 'all zones', '*']:
+                raise ValueError("Energy forecasting requires a specific zone name, not 'all'")
+            return v
+        return v
     
     model_config = {
         "json_schema_extra": {
             "examples": [
                 {
-                    "zone": "Paint Shop",
+                    "zone_name": "Paint Shop",
                     "hours_ahead": 24,
                     "current_temp": 185.0,
                     "current_efficiency": 85.0
                 },
                 {
-                    "zone": "Assembly",
+                    "zone_name": "General Assembly",
                     "hours_ahead": 48
                 }
             ]
@@ -181,8 +222,8 @@ def detect_anomalies_endpoint(request: AnomalyDetectionRequest):
         df['timestamp'] = pd.to_datetime(df['timestamp'])
         
         # Filter by zone if specified
-        if request.zone:
-            df = df[df['zone'] == request.zone]
+        if request.zone_name:
+            df = df[df['zone'] == request.zone_name]
         
         # Get recent data
         cutoff_time = df['timestamp'].max() - timedelta(hours=request.hours)
@@ -242,14 +283,14 @@ def forecast_energy_endpoint(request: EnergyForecastRequest):
     try:
         # Get forecast
         forecast_data = energy_forecaster.predict(
-            zone=request.zone,
+            zone=request.zone_name,
             hours_ahead=request.hours_ahead,
             current_temp=request.current_temp,
             current_efficiency=request.current_efficiency
         )
         
         if forecast_data is None:
-            raise HTTPException(status_code=404, detail=f"Zone '{request.zone}' not found in trained models")
+            raise HTTPException(status_code=404, detail=f"Zone '{request.zone_name}' not found in trained models")
         
         # Convert to Pydantic models
         forecast_points = [ForecastPoint(**point) for point in forecast_data]
@@ -268,7 +309,7 @@ def forecast_energy_endpoint(request: EnergyForecastRequest):
             confidence = "low"
         
         return EnergyForecastResponse(
-            zone=request.zone,
+            zone=request.zone_name,
             forecast_hours=request.hours_ahead,
             forecast=forecast_points,
             total_predicted_energy=round(total_energy, 2),

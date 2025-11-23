@@ -76,6 +76,9 @@ build/
 .env.test.local
 .env.production.local
 
+# Ignore all markdown files
+*.md
+
 # Temporary documentation files (auto-generated)
 PROJECT_STATUS_FINAL.md
 API_TEST_RESULTS.md
@@ -103,3 +106,6 @@ vercel.json
 VERCEL_SIZE_FIX.md
 DEPLOYMENT_ALTERNATIVES.md
 RAILWAY_DEPLOYMENT.md
+API_ENDPOINTS_REFERENCE.md
+DEPLOY_CHECKLIST.md
+ML_MODELS_DOCUMENTATION.md

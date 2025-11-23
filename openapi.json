@@ -1,6 +1,3 @@
-✅ ML models loaded from disk
-✅ ML and simulation routes loaded
-✅ Loaded 5040 records from /Users/suraj/digital-twin/backend/../data/plant_data_30days.csv
 {
   "openapi": "3.1.0",
   "info": {
@@ -707,7 +704,7 @@
       },
       "AnomalyDetectionRequest": {
         "properties": {
-          "zone": {
+          "zone_name": {
             "anyOf": [
               {
                 "type": "string"
@@ -716,12 +713,13 @@
                 "type": "null"
               }
             ],
-            "title": "Zone",
-            "description": "Specific zone to analyze (e.g., 'Paint Shop'), or None for all zones",
+            "title": "Zone Name",
+            "description": "Specific zone to analyze (e.g., 'Paint Shop'), or omit/null for all zones. Valid zones: 'Stamping Shop', 'Body Shop (BIW)', 'Paint Shop', 'General Assembly', 'Powertrain Assembly', 'Quality Control', 'Logistics'",
             "examples": [
               "Paint Shop",
               "Body Shop (BIW)",
-              "Assembly"
+              "General Assembly",
+              null
             ]
           },
           "hours": {
@@ -738,10 +736,14 @@
         "examples": [
           {
             "hours": 24,
-            "zone": "Paint Shop"
+            "zone_name": "Paint Shop"
           },
           {
-            "hours": 48
+            "hours": 48,
+            "zone_name": "Body Shop (BIW)"
+          },
+          {
+            "hours": 24
           }
         ]
       },
@@ -1038,10 +1040,10 @@
       },
       "EnergyForecastRequest": {
         "properties": {
-          "zone": {
+          "zone_name": {
             "type": "string",
-            "title": "Zone",
-            "description": "Zone name to forecast energy consumption",
+            "title": "Zone Name",
+            "description": "Zone name to forecast energy consumption. Valid zones: 'Stamping Shop', 'Body Shop (BIW)', 'Paint Shop', 'General Assembly', 'Powertrain Assembly', 'Quality Control', 'Logistics'",
             "examples": [
               "Paint Shop",
               "Body Shop (BIW)",
@@ -1083,7 +1085,7 @@
         },
         "type": "object",
         "required": [
-          "zone"
+          "zone_name"
         ],
         "title": "EnergyForecastRequest",
         "examples": [
@@ -1091,11 +1093,11 @@
             "current_efficiency": 85.0,
             "current_temp": 185.0,
             "hours_ahead": 24,
-            "zone": "Paint Shop"
+            "zone_name": "Paint Shop"
           },
           {
             "hours_ahead": 48,
-            "zone": "Assembly"
+            "zone_name": "General Assembly"
           }
         ]
       },
@@ -1246,10 +1248,10 @@
       },
       "MaintenanceRequest": {
         "properties": {
-          "zone": {
+          "zone_name": {
             "type": "string",
-            "title": "Zone",
-            "description": "Zone name requiring maintenance",
+            "title": "Zone Name",
+            "description": "Zone name requiring maintenance. Valid zones: 'Stamping Shop', 'Body Shop (BIW)', 'Paint Shop', 'General Assembly', 'Powertrain Assembly', 'Quality Control', 'Logistics'",
             "examples": [
               "Paint Shop",
               "Body Shop (BIW)",
@@ -1278,7 +1280,7 @@
         },
         "type": "object",
         "required": [
-          "zone",
+          "zone_name",
           "issue",
           "priority"
         ],
@@ -1287,7 +1289,7 @@
           {
             "issue": "Oven temperature anomaly detected - 3 occurrences in 24h",
             "priority": "high",
-            "zone": "Paint Shop"
+            "zone_name": "Paint Shop"
           }
         ]
       },
@@ -1567,12 +1569,19 @@
             ]
           },
           "modifications": {
-            "items": {
-              "$ref": "#/components/schemas/ZoneModification"
-            },
-            "type": "array",
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ZoneModification"
+                },
+                "type": "array"
+              },
+              {
+                "type": "string"
+              }
+            ],
             "title": "Modifications",
-            "description": "Array of zone modifications to simulate. Each modification must include 'zone_name' and at least one parameter change."
+            "description": "Array of zone modifications to simulate. Must be a JSON array. Each modification must include 'zone_name' and at least one parameter change (capacity_increase, temperature_offset, efficiency_modifier, energy_multiplier, or add_production_lines)."
           },
           "duration_hours": {
             "type": "integer",
@@ -1594,9 +1603,9 @@
             "duration_hours": 720,
             "modifications": [
               {
-                "capacity_increase": 50,
+                "capacity_increase": 100,
                 "efficiency_modifier": -10,
-                "energy_multiplier": 1.5,
+                "energy_multiplier": 2.0,
                 "zone_name": "Paint Shop"
               }
             ],
@@ -1757,9 +1766,9 @@
               "Improve efficiency through automation"
             ]
           },
-          "zone": {
+          "zone_name": {
             "type": "string",
-            "title": "Zone",
+            "title": "Zone Name",
             "description": "Zone name to test. Valid zones: 'Stamping Shop', 'Body Shop (BIW)', 'Paint Shop', 'General Assembly', 'Powertrain Assembly', 'Quality Control', 'Logistics'",
             "examples": [
               "Paint Shop",
@@ -1787,7 +1796,7 @@
         "required": [
           "scenario_name",
           "description",
-          "zone",
+          "zone_name",
           "parameter",
           "value_change"
         ],
@@ -1798,14 +1807,14 @@
             "parameter": "temperature",
             "scenario_name": "Reduce Paint Shop Temperature",
             "value_change": -10,
-            "zone": "Paint Shop"
+            "zone_name": "Paint Shop"
           },
           {
             "description": "Test impact of 5% efficiency improvement through automation",
             "parameter": "efficiency",
             "scenario_name": "Improve Assembly Efficiency",
             "value_change": 5,
-            "zone": "General Assembly"
+            "zone_name": "General Assembly"
           }
         ]
       },

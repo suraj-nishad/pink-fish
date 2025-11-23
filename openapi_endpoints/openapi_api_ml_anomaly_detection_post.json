@@ -1,0 +1,234 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "PlantOps Digital Twin Dashboard APIs - Detect Anomalies Endpoint",
+    "description": "Detect anomalies in plant zone data using Isolation Forest ML model\nReturns anomaly predictions with confidence scores",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://pink-fish-production.up.railway.app",
+      "description": "Production Server"
+    },
+    {
+      "url": "http://127.0.0.1:8000",
+      "description": "Local Development Server"
+    }
+  ],
+  "paths": {
+    "/api/ml/anomaly-detection": {
+      "post": {
+        "tags": [
+          "Machine Learning"
+        ],
+        "summary": "Detect Anomalies Endpoint",
+        "description": "Detect anomalies in plant zone data using Isolation Forest ML model\nReturns anomaly predictions with confidence scores",
+        "operationId": "detect_anomalies_endpoint_api_ml_anomaly_detection_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnomalyDetectionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnomalyDetectionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AnomalyDetectionRequest": {
+        "properties": {
+          "zone_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Zone Name",
+            "description": "Specific zone to analyze (e.g., 'Paint Shop'), or omit/null for all zones. Valid zones: 'Stamping Shop', 'Body Shop (BIW)', 'Paint Shop', 'General Assembly', 'Powertrain Assembly', 'Quality Control', 'Logistics'",
+            "examples": [
+              "Paint Shop",
+              "Body Shop (BIW)",
+              "General Assembly",
+              null
+            ]
+          },
+          "hours": {
+            "type": "integer",
+            "maximum": 168.0,
+            "minimum": 1.0,
+            "title": "Hours",
+            "description": "Hours of historical data to analyze (1-168)",
+            "default": 24
+          }
+        },
+        "type": "object",
+        "title": "AnomalyDetectionRequest",
+        "examples": [
+          {
+            "hours": 24,
+            "zone_name": "Paint Shop"
+          },
+          {
+            "hours": 48,
+            "zone_name": "Body Shop (BIW)"
+          },
+          {
+            "hours": 24
+          }
+        ]
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "AnomalyDetectionResponse": {
+        "properties": {
+          "total_records": {
+            "type": "integer",
+            "title": "Total Records"
+          },
+          "anomalies_detected": {
+            "type": "integer",
+            "title": "Anomalies Detected"
+          },
+          "anomaly_rate": {
+            "type": "number",
+            "title": "Anomaly Rate"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/AnomalyResult"
+            },
+            "type": "array",
+            "title": "Results"
+          },
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_records",
+          "anomalies_detected",
+          "anomaly_rate",
+          "results",
+          "timestamp"
+        ],
+        "title": "AnomalyDetectionResponse"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "AnomalyResult": {
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
+          },
+          "zone": {
+            "type": "string",
+            "title": "Zone"
+          },
+          "is_anomaly": {
+            "type": "boolean",
+            "title": "Is Anomaly"
+          },
+          "anomaly_score": {
+            "type": "number",
+            "title": "Anomaly Score"
+          },
+          "confidence": {
+            "type": "number",
+            "title": "Confidence"
+          },
+          "metrics": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Metrics"
+          }
+        },
+        "type": "object",
+        "required": [
+          "timestamp",
+          "zone",
+          "is_anomaly",
+          "anomaly_score",
+          "confidence",
+          "metrics"
+        ],
+        "title": "AnomalyResult"
+      }
+    }
+  }
+}

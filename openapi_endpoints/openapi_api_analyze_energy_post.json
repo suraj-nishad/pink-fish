@@ -1,0 +1,252 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "PlantOps Digital Twin Dashboard APIs - Analyze Energy",
+    "description": "Trigger energy analysis workflow via IBM watsonx Orchestrate\nAnalyzes energy consumption patterns and provides AI-powered recommendations\n\nArgs:\n    request: Energy analysis request with zones (optional) and timeframe\n    \nReturns:\n    Energy analysis with hotspots, recommendations, and impact metrics",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://pink-fish-production.up.railway.app",
+      "description": "Production Server"
+    },
+    {
+      "url": "http://127.0.0.1:8000",
+      "description": "Local Development Server"
+    }
+  ],
+  "paths": {
+    "/api/analyze-energy": {
+      "post": {
+        "tags": [
+          "AI Analysis"
+        ],
+        "summary": "Analyze Energy",
+        "description": "Trigger energy analysis workflow via IBM watsonx Orchestrate\nAnalyzes energy consumption patterns and provides AI-powered recommendations\n\nArgs:\n    request: Energy analysis request with zones (optional) and timeframe\n    \nReturns:\n    Energy analysis with hotspots, recommendations, and impact metrics",
+        "operationId": "analyze_energy_api_analyze_energy_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnergyAnalysisRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnergyAnalysisResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "EnergyAnalysisResponse": {
+        "properties": {
+          "hotspots": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Hotspots"
+          },
+          "recommendations": {
+            "items": {
+              "$ref": "#/components/schemas/RecommendationModel"
+            },
+            "type": "array",
+            "title": "Recommendations"
+          },
+          "impact": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Impact"
+          },
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "hotspots",
+          "recommendations",
+          "impact",
+          "timestamp"
+        ],
+        "title": "EnergyAnalysisResponse"
+      },
+      "EnergyAnalysisRequest": {
+        "properties": {
+          "zones": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Zones",
+            "description": "Array of zone names to analyze. Must be a JSON array of strings. Valid zone names: 'Stamping Shop', 'Body Shop (BIW)', 'Paint Shop', 'General Assembly', 'Powertrain Assembly', 'Quality Control', 'Logistics'. To analyze ALL zones: omit this field entirely or set to null. DO NOT use the string 'all' - use null or omit the field.",
+            "examples": [
+              [
+                "Paint Shop"
+              ],
+              [
+                "Paint Shop",
+                "Body Shop (BIW)"
+              ],
+              [
+                "Stamping Shop",
+                "Paint Shop",
+                "General Assembly"
+              ],
+              null
+            ]
+          },
+          "timeframe": {
+            "type": "string",
+            "title": "Timeframe",
+            "description": "Analysis timeframe: 'last_24h', 'last_7d', or 'last_30d'",
+            "default": "last_24h",
+            "examples": [
+              "last_24h",
+              "last_7d",
+              "last_30d"
+            ]
+          }
+        },
+        "type": "object",
+        "title": "EnergyAnalysisRequest",
+        "description": "Request model for energy analysis",
+        "examples": [
+          {
+            "timeframe": "last_24h",
+            "zones": [
+              "Paint Shop"
+            ]
+          },
+          {
+            "timeframe": "last_7d",
+            "zones": [
+              "Paint Shop",
+              "Body Shop (BIW)",
+              "General Assembly"
+            ]
+          },
+          {
+            "timeframe": "last_24h"
+          }
+        ]
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "RecommendationModel": {
+        "properties": {
+          "zone": {
+            "type": "string",
+            "title": "Zone"
+          },
+          "action": {
+            "type": "string",
+            "title": "Action"
+          },
+          "priority": {
+            "type": "string",
+            "title": "Priority"
+          },
+          "estimated_savings": {
+            "type": "number",
+            "title": "Estimated Savings"
+          },
+          "implementation": {
+            "type": "string",
+            "title": "Implementation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "zone",
+          "action",
+          "priority",
+          "estimated_savings",
+          "implementation"
+        ],
+        "title": "RecommendationModel"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

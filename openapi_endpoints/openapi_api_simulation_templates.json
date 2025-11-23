@@ -1,0 +1,40 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "PlantOps Digital Twin Dashboard APIs - Get Simulation Templates",
+    "description": "Get pre-configured simulation templates",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://pink-fish-production.up.railway.app",
+      "description": "Production Server"
+    },
+    {
+      "url": "http://127.0.0.1:8000",
+      "description": "Local Development Server"
+    }
+  ],
+  "paths": {
+    "/api/simulation/templates": {
+      "get": {
+        "tags": [
+          "Digital Twin Simulation"
+        ],
+        "summary": "Get Simulation Templates",
+        "description": "Get pre-configured simulation templates",
+        "operationId": "get_simulation_templates_api_simulation_templates_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

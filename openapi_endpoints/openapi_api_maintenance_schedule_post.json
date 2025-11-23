@@ -1,0 +1,187 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "PlantOps Digital Twin Dashboard APIs - Schedule Maintenance",
+    "description": "Create maintenance ticket\nThis endpoint can be called by watsonx Orchestrate workflows\nwhich can then trigger Jira/ServiceNow integrations",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://pink-fish-production.up.railway.app",
+      "description": "Production Server"
+    },
+    {
+      "url": "http://127.0.0.1:8000",
+      "description": "Local Development Server"
+    }
+  ],
+  "paths": {
+    "/api/maintenance/schedule": {
+      "post": {
+        "tags": [
+          "Maintenance"
+        ],
+        "summary": "Schedule Maintenance",
+        "description": "Create maintenance ticket\nThis endpoint can be called by watsonx Orchestrate workflows\nwhich can then trigger Jira/ServiceNow integrations",
+        "operationId": "schedule_maintenance_api_maintenance_schedule_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MaintenanceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MaintenanceResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "MaintenanceRequest": {
+        "properties": {
+          "zone_name": {
+            "type": "string",
+            "title": "Zone Name",
+            "description": "Zone name requiring maintenance. Valid zones: 'Stamping Shop', 'Body Shop (BIW)', 'Paint Shop', 'General Assembly', 'Powertrain Assembly', 'Quality Control', 'Logistics'",
+            "examples": [
+              "Paint Shop",
+              "Body Shop (BIW)",
+              "Assembly"
+            ]
+          },
+          "issue": {
+            "type": "string",
+            "title": "Issue",
+            "description": "Description of the maintenance issue",
+            "examples": [
+              "Oven temperature anomaly",
+              "Equipment efficiency below threshold"
+            ]
+          },
+          "priority": {
+            "type": "string",
+            "title": "Priority",
+            "description": "Maintenance priority level",
+            "examples": [
+              "low",
+              "medium",
+              "high"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "zone_name",
+          "issue",
+          "priority"
+        ],
+        "title": "MaintenanceRequest",
+        "examples": [
+          {
+            "issue": "Oven temperature anomaly detected - 3 occurrences in 24h",
+            "priority": "high",
+            "zone_name": "Paint Shop"
+          }
+        ]
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "MaintenanceResponse": {
+        "properties": {
+          "ticket_id": {
+            "type": "string",
+            "title": "Ticket Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "assigned_to": {
+            "type": "string",
+            "title": "Assigned To"
+          },
+          "due_date": {
+            "type": "string",
+            "title": "Due Date"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticket_id",
+          "status",
+          "assigned_to",
+          "due_date"
+        ],
+        "title": "MaintenanceResponse"
+      }
+    }
+  }
+}

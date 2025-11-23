@@ -1,0 +1,219 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "PlantOps Digital Twin Dashboard APIs - What If Analysis",
+    "description": "Quick what-if analysis for a single parameter change\nPredicts impact without running full simulation",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://pink-fish-production.up.railway.app",
+      "description": "Production Server"
+    },
+    {
+      "url": "http://127.0.0.1:8000",
+      "description": "Local Development Server"
+    }
+  ],
+  "paths": {
+    "/api/simulation/what-if": {
+      "post": {
+        "tags": [
+          "Digital Twin Simulation"
+        ],
+        "summary": "What If Analysis",
+        "description": "Quick what-if analysis for a single parameter change\nPredicts impact without running full simulation",
+        "operationId": "what_if_analysis_api_simulation_what_if_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WhatIfScenario"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WhatIfResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "WhatIfResult": {
+        "properties": {
+          "scenario": {
+            "$ref": "#/components/schemas/WhatIfScenario"
+          },
+          "predicted_impact": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Predicted Impact"
+          },
+          "feasibility": {
+            "type": "string",
+            "title": "Feasibility"
+          },
+          "risk_level": {
+            "type": "string",
+            "title": "Risk Level"
+          },
+          "recommendation": {
+            "type": "string",
+            "title": "Recommendation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scenario",
+          "predicted_impact",
+          "feasibility",
+          "risk_level",
+          "recommendation"
+        ],
+        "title": "WhatIfResult"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "WhatIfScenario": {
+        "properties": {
+          "scenario_name": {
+            "type": "string",
+            "title": "Scenario Name",
+            "description": "Name for this what-if scenario",
+            "examples": [
+              "Reduce Paint Shop Temperature",
+              "Increase Assembly Efficiency"
+            ]
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "description": "Detailed description of the scenario",
+            "examples": [
+              "Test impact of reducing oven temperature by 10\u00b0C",
+              "Improve efficiency through automation"
+            ]
+          },
+          "zone_name": {
+            "type": "string",
+            "title": "Zone Name",
+            "description": "Zone name to test. Valid zones: 'Stamping Shop', 'Body Shop (BIW)', 'Paint Shop', 'General Assembly', 'Powertrain Assembly', 'Quality Control', 'Logistics'",
+            "examples": [
+              "Paint Shop",
+              "Body Shop (BIW)",
+              "General Assembly"
+            ]
+          },
+          "parameter": {
+            "type": "string",
+            "title": "Parameter",
+            "description": "Parameter to modify. Valid parameters: 'temperature', 'energy', 'efficiency', 'capacity', 'production_rate'",
+            "examples": [
+              "temperature",
+              "energy",
+              "efficiency"
+            ]
+          },
+          "value_change": {
+            "type": "number",
+            "title": "Value Change",
+            "description": "Amount to change the parameter by (positive or negative). For temperature: degrees Celsius, For efficiency: percentage points, For energy: multiplier (e.g., -0.2 = 20% reduction)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scenario_name",
+          "description",
+          "zone_name",
+          "parameter",
+          "value_change"
+        ],
+        "title": "WhatIfScenario",
+        "examples": [
+          {
+            "description": "Test impact of reducing oven temperature by 10\u00b0C to save energy",
+            "parameter": "temperature",
+            "scenario_name": "Reduce Paint Shop Temperature",
+            "value_change": -10,
+            "zone_name": "Paint Shop"
+          },
+          {
+            "description": "Test impact of 5% efficiency improvement through automation",
+            "parameter": "efficiency",
+            "scenario_name": "Improve Assembly Efficiency",
+            "value_change": 5,
+            "zone_name": "General Assembly"
+          }
+        ]
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

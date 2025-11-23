@@ -1,0 +1,150 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "PlantOps Digital Twin Dashboard APIs - Update Config",
+    "description": "Update analysis configuration thresholds",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://pink-fish-production.up.railway.app",
+      "description": "Production Server"
+    },
+    {
+      "url": "http://127.0.0.1:8000",
+      "description": "Local Development Server"
+    }
+  ],
+  "paths": {
+    "/api/config": {
+      "put": {
+        "tags": [
+          "Configuration"
+        ],
+        "summary": "Update Config",
+        "description": "Update analysis configuration thresholds",
+        "operationId": "update_config_api_config_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfigModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfigModel"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ConfigModel": {
+        "properties": {
+          "ENERGY_THRESHOLD_AMBER": {
+            "type": "number",
+            "title": "Energy Threshold Amber"
+          },
+          "ENERGY_THRESHOLD_RED": {
+            "type": "number",
+            "title": "Energy Threshold Red"
+          },
+          "EFFICIENCY_THRESHOLD_AMBER": {
+            "type": "number",
+            "title": "Efficiency Threshold Amber"
+          },
+          "EFFICIENCY_THRESHOLD_RED": {
+            "type": "number",
+            "title": "Efficiency Threshold Red"
+          },
+          "CO2_FACTOR": {
+            "type": "number",
+            "title": "Co2 Factor"
+          },
+          "COST_PER_KWH": {
+            "type": "number",
+            "title": "Cost Per Kwh"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ENERGY_THRESHOLD_AMBER",
+          "ENERGY_THRESHOLD_RED",
+          "EFFICIENCY_THRESHOLD_AMBER",
+          "EFFICIENCY_THRESHOLD_RED",
+          "CO2_FACTOR",
+          "COST_PER_KWH"
+        ],
+        "title": "ConfigModel"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

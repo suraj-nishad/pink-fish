@@ -1,0 +1,187 @@
+{
+  "project": "PlantOps Digital Twin Dashboard APIs",
+  "version": "1.0.0",
+  "total_endpoints": 20,
+  "endpoints": [
+    {
+      "file": "openapi_.json",
+      "method": "GET",
+      "path": "/",
+      "summary": "Root",
+      "tags": [
+        "Health"
+      ]
+    },
+    {
+      "file": "openapi_api_analyze_energy_post.json",
+      "method": "POST",
+      "path": "/api/analyze-energy",
+      "summary": "Analyze Energy",
+      "tags": [
+        "AI Analysis"
+      ]
+    },
+    {
+      "file": "openapi_api_chatops_post.json",
+      "method": "POST",
+      "path": "/api/chatops",
+      "summary": "Chatops Query",
+      "tags": [
+        "ChatOps"
+      ]
+    },
+    {
+      "file": "openapi_api_config.json",
+      "method": "GET",
+      "path": "/api/config",
+      "summary": "Get Config",
+      "tags": [
+        "Configuration"
+      ]
+    },
+    {
+      "file": "openapi_api_config_put.json",
+      "method": "PUT",
+      "path": "/api/config",
+      "summary": "Update Config",
+      "tags": [
+        "Configuration"
+      ]
+    },
+    {
+      "file": "openapi_api_kpis.json",
+      "method": "GET",
+      "path": "/api/kpis",
+      "summary": "Get Plant Kpis",
+      "tags": [
+        "Analytics"
+      ]
+    },
+    {
+      "file": "openapi_api_maintenance_schedule_post.json",
+      "method": "POST",
+      "path": "/api/maintenance/schedule",
+      "summary": "Schedule Maintenance",
+      "tags": [
+        "Maintenance"
+      ]
+    },
+    {
+      "file": "openapi_api_ml_anomaly_detection_post.json",
+      "method": "POST",
+      "path": "/api/ml/anomaly-detection",
+      "summary": "Detect Anomalies Endpoint",
+      "tags": [
+        "Machine Learning"
+      ]
+    },
+    {
+      "file": "openapi_api_ml_energy_forecast_post.json",
+      "method": "POST",
+      "path": "/api/ml/energy-forecast",
+      "summary": "Forecast Energy Endpoint",
+      "tags": [
+        "Machine Learning"
+      ]
+    },
+    {
+      "file": "openapi_api_ml_model_info.json",
+      "method": "GET",
+      "path": "/api/ml/model-info",
+      "summary": "Get Model Info",
+      "tags": [
+        "Machine Learning"
+      ]
+    },
+    {
+      "file": "openapi_api_ml_predictive_maintenance.json",
+      "method": "GET",
+      "path": "/api/ml/predictive-maintenance",
+      "summary": "Predictive Maintenance Endpoint",
+      "tags": [
+        "Machine Learning"
+      ]
+    },
+    {
+      "file": "openapi_api_simulation_run_post.json",
+      "method": "POST",
+      "path": "/api/simulation/run",
+      "summary": "Run Simulation",
+      "tags": [
+        "Digital Twin Simulation"
+      ]
+    },
+    {
+      "file": "openapi_api_simulation_simulations.json",
+      "method": "GET",
+      "path": "/api/simulation/simulations",
+      "summary": "List Simulations",
+      "tags": [
+        "Digital Twin Simulation"
+      ]
+    },
+    {
+      "file": "openapi_api_simulation_simulations_simulation_id.json",
+      "method": "GET",
+      "path": "/api/simulation/simulations/{simulation_id}",
+      "summary": "Get Simulation",
+      "tags": [
+        "Digital Twin Simulation"
+      ]
+    },
+    {
+      "file": "openapi_api_simulation_templates.json",
+      "method": "GET",
+      "path": "/api/simulation/templates",
+      "summary": "Get Simulation Templates",
+      "tags": [
+        "Digital Twin Simulation"
+      ]
+    },
+    {
+      "file": "openapi_api_simulation_what_if_post.json",
+      "method": "POST",
+      "path": "/api/simulation/what-if",
+      "summary": "What If Analysis",
+      "tags": [
+        "Digital Twin Simulation"
+      ]
+    },
+    {
+      "file": "openapi_api_simulation_zone_config.json",
+      "method": "GET",
+      "path": "/api/simulation/zone-config",
+      "summary": "Get Zone Configurations",
+      "tags": [
+        "Digital Twin Simulation"
+      ]
+    },
+    {
+      "file": "openapi_api_zones_status.json",
+      "method": "GET",
+      "path": "/api/zones/status",
+      "summary": "Get Zones Status",
+      "tags": [
+        "Plant Monitoring"
+      ]
+    },
+    {
+      "file": "openapi_api_zones_zone_id_history.json",
+      "method": "GET",
+      "path": "/api/zones/{zone_id}/history",
+      "summary": "Get Zone History",
+      "tags": [
+        "Plant Monitoring"
+      ]
+    },
+    {
+      "file": "openapi_health.json",
+      "method": "GET",
+      "path": "/health",
+      "summary": "Health Check",
+      "tags": [
+        "Health"
+      ]
+    }
+  ]
+}

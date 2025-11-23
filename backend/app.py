@@ -139,18 +139,44 @@ class ChatOpsResponse(BaseModel):
     confidence: float
 
 class MaintenanceRequest(BaseModel):
-    zone: str = Field(..., description="Zone name requiring maintenance", 
+    zone_name: str = Field(..., description="Zone name requiring maintenance. Valid zones: 'Stamping Shop', 'Body Shop (BIW)', 'Paint Shop', 'General Assembly', 'Powertrain Assembly', 'Quality Control', 'Logistics'", 
                       examples=["Paint Shop", "Body Shop (BIW)", "Assembly"])
     issue: str = Field(..., description="Description of the maintenance issue", 
                        examples=["Oven temperature anomaly", "Equipment efficiency below threshold"])
     priority: str = Field(..., description="Maintenance priority level", 
                           examples=["low", "medium", "high"])
     
+    @field_validator('zone_name', mode='before')
+    @classmethod
+    def normalize_zone_name(cls, v):
+        """
+        Normalize zone name - handle watsonx sending JSON strings or non-standard formats
+        """
+        if v is None:
+            raise ValueError("zone_name is required for maintenance requests - please specify which zone needs maintenance")
+        
+        # Handle JSON string format from watsonx
+        if isinstance(v, str):
+            v = v.strip()
+            # Try to parse as JSON if it looks like a JSON structure
+            if v.startswith('"') or v.startswith('['):
+                try:
+                    import json
+                    v = json.loads(v)
+                except:
+                    pass
+        
+        # Reject "all" keyword for maintenance - must specify specific zone
+        if isinstance(v, str) and v.lower() in ['all', 'all zones', '*']:
+            raise ValueError("Maintenance requests require a specific zone - cannot schedule maintenance for 'all zones'")
+        
+        return v
+    
     model_config = {
         "json_schema_extra": {
             "examples": [
                 {
-                    "zone": "Paint Shop",
+                    "zone_name": "Paint Shop",
                     "issue": "Oven temperature anomaly detected - 3 occurrences in 24h",
                     "priority": "high"
                 }

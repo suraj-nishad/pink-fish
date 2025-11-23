@@ -1,0 +1,194 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "PlantOps Digital Twin Dashboard APIs - Get Zones Status",
+    "description": "Get current status of all manufacturing zones\nReturns real-time metrics, alerts, and overall plant health",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://pink-fish-production.up.railway.app",
+      "description": "Production Server"
+    },
+    {
+      "url": "http://127.0.0.1:8000",
+      "description": "Local Development Server"
+    }
+  ],
+  "paths": {
+    "/api/zones/status": {
+      "get": {
+        "tags": [
+          "Plant Monitoring"
+        ],
+        "summary": "Get Zones Status",
+        "description": "Get current status of all manufacturing zones\nReturns real-time metrics, alerts, and overall plant health",
+        "operationId": "get_zones_status_api_zones_status_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlantStatusResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "PlantStatusResponse": {
+        "properties": {
+          "zones": {
+            "items": {
+              "$ref": "#/components/schemas/ZoneStatusModel"
+            },
+            "type": "array",
+            "title": "Zones"
+          },
+          "last_updated": {
+            "type": "string",
+            "title": "Last Updated"
+          },
+          "plant_status": {
+            "type": "string",
+            "title": "Plant Status",
+            "default": "operational"
+          },
+          "total_zones": {
+            "type": "integer",
+            "title": "Total Zones"
+          },
+          "zones_normal": {
+            "type": "integer",
+            "title": "Zones Normal"
+          },
+          "zones_warning": {
+            "type": "integer",
+            "title": "Zones Warning"
+          },
+          "zones_critical": {
+            "type": "integer",
+            "title": "Zones Critical"
+          }
+        },
+        "type": "object",
+        "required": [
+          "zones",
+          "last_updated",
+          "total_zones",
+          "zones_normal",
+          "zones_warning",
+          "zones_critical"
+        ],
+        "title": "PlantStatusResponse"
+      },
+      "ZoneStatusModel": {
+        "properties": {
+          "zone_id": {
+            "type": "string",
+            "title": "Zone Id"
+          },
+          "zone_name": {
+            "type": "string",
+            "title": "Zone Name"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "metrics": {
+            "$ref": "#/components/schemas/ZoneMetricsModel"
+          },
+          "alerts": {
+            "items": {
+              "$ref": "#/components/schemas/AlertModel"
+            },
+            "type": "array",
+            "title": "Alerts",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "zone_id",
+          "zone_name",
+          "status",
+          "metrics"
+        ],
+        "title": "ZoneStatusModel"
+      },
+      "AlertModel": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "message",
+          "timestamp"
+        ],
+        "title": "AlertModel"
+      },
+      "ZoneMetricsModel": {
+        "properties": {
+          "energy_kwh": {
+            "type": "number",
+            "title": "Energy Kwh"
+          },
+          "temperature_c": {
+            "type": "number",
+            "title": "Temperature C"
+          },
+          "efficiency_pct": {
+            "type": "number",
+            "title": "Efficiency Pct"
+          },
+          "co2_kg": {
+            "type": "number",
+            "title": "Co2 Kg"
+          },
+          "cost_usd": {
+            "type": "number",
+            "title": "Cost Usd"
+          },
+          "production_units": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Production Units"
+          }
+        },
+        "type": "object",
+        "required": [
+          "energy_kwh",
+          "temperature_c",
+          "efficiency_pct",
+          "co2_kg",
+          "cost_usd"
+        ],
+        "title": "ZoneMetricsModel"
+      }
+    }
+  }
+}

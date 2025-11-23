@@ -1,0 +1,130 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "PlantOps Digital Twin Dashboard APIs - Predictive Maintenance Endpoint",
+    "description": "Analyze plant data to predict maintenance needs\nUses anomaly patterns to recommend preventive maintenance",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://pink-fish-production.up.railway.app",
+      "description": "Production Server"
+    },
+    {
+      "url": "http://127.0.0.1:8000",
+      "description": "Local Development Server"
+    }
+  ],
+  "paths": {
+    "/api/ml/predictive-maintenance": {
+      "get": {
+        "tags": [
+          "Machine Learning"
+        ],
+        "summary": "Predictive Maintenance Endpoint",
+        "description": "Analyze plant data to predict maintenance needs\nUses anomaly patterns to recommend preventive maintenance",
+        "operationId": "predictive_maintenance_endpoint_api_ml_predictive_maintenance_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PredictiveMaintenanceResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "PredictiveMaintenanceResponse": {
+        "properties": {
+          "recommendations": {
+            "items": {
+              "$ref": "#/components/schemas/MaintenanceRecommendation"
+            },
+            "type": "array",
+            "title": "Recommendations"
+          },
+          "total_zones_needing_maintenance": {
+            "type": "integer",
+            "title": "Total Zones Needing Maintenance"
+          },
+          "high_priority_count": {
+            "type": "integer",
+            "title": "High Priority Count"
+          },
+          "estimated_total_downtime": {
+            "type": "integer",
+            "title": "Estimated Total Downtime"
+          },
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "recommendations",
+          "total_zones_needing_maintenance",
+          "high_priority_count",
+          "estimated_total_downtime",
+          "timestamp"
+        ],
+        "title": "PredictiveMaintenanceResponse"
+      },
+      "MaintenanceRecommendation": {
+        "properties": {
+          "zone": {
+            "type": "string",
+            "title": "Zone"
+          },
+          "priority": {
+            "type": "string",
+            "title": "Priority"
+          },
+          "anomaly_count": {
+            "type": "integer",
+            "title": "Anomaly Count"
+          },
+          "issue": {
+            "type": "string",
+            "title": "Issue"
+          },
+          "recommended_action": {
+            "type": "string",
+            "title": "Recommended Action"
+          },
+          "current_avg_energy": {
+            "type": "number",
+            "title": "Current Avg Energy"
+          },
+          "current_avg_efficiency": {
+            "type": "number",
+            "title": "Current Avg Efficiency"
+          },
+          "estimated_downtime_hours": {
+            "type": "integer",
+            "title": "Estimated Downtime Hours"
+          }
+        },
+        "type": "object",
+        "required": [
+          "zone",
+          "priority",
+          "anomaly_count",
+          "issue",
+          "recommended_action",
+          "current_avg_energy",
+          "current_avg_efficiency",
+          "estimated_downtime_hours"
+        ],
+        "title": "MaintenanceRecommendation"
+      }
+    }
+  }
+}

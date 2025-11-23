@@ -1,0 +1,476 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "PlantOps Digital Twin Dashboard APIs - Run Simulation",
+    "description": "Run a digital twin simulation with specified modifications\nCompares baseline vs modified configuration",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://pink-fish-production.up.railway.app",
+      "description": "Production Server"
+    },
+    {
+      "url": "http://127.0.0.1:8000",
+      "description": "Local Development Server"
+    }
+  ],
+  "paths": {
+    "/api/simulation/run": {
+      "post": {
+        "tags": [
+          "Digital Twin Simulation"
+        ],
+        "summary": "Run Simulation",
+        "description": "Run a digital twin simulation with specified modifications\nCompares baseline vs modified configuration",
+        "operationId": "run_simulation_api_simulation_run_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SimulationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimulationResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "SimulationResult": {
+        "properties": {
+          "simulation_id": {
+            "type": "string",
+            "title": "Simulation Id"
+          },
+          "simulation_name": {
+            "type": "string",
+            "title": "Simulation Name"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "zones_modified": {
+            "type": "integer",
+            "title": "Zones Modified"
+          },
+          "comparison": {
+            "$ref": "#/components/schemas/SimulationComparison"
+          },
+          "zone_details": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Zone Details"
+          },
+          "recommendations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Recommendations"
+          },
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "simulation_id",
+          "simulation_name",
+          "status",
+          "zones_modified",
+          "comparison",
+          "zone_details",
+          "recommendations",
+          "timestamp"
+        ],
+        "title": "SimulationResult"
+      },
+      "SimulationRequest": {
+        "properties": {
+          "simulation_name": {
+            "type": "string",
+            "title": "Simulation Name",
+            "description": "Descriptive name for this simulation scenario",
+            "examples": [
+              "Add second Paint Shop line",
+              "Reduce assembly temperature",
+              "Q1 2026 capacity increase"
+            ]
+          },
+          "modifications": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ZoneModification"
+                },
+                "type": "array"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Modifications",
+            "description": "Array of zone modifications to simulate. Must be a JSON array. Each modification must include 'zone_name' and at least one parameter change (capacity_increase, temperature_offset, efficiency_modifier, energy_multiplier, or add_production_lines)."
+          },
+          "duration_hours": {
+            "type": "integer",
+            "maximum": 168.0,
+            "minimum": 1.0,
+            "title": "Duration Hours",
+            "description": "Number of hours to simulate (1-168). Use 720 for 30-day simulation, 168 for 1-week simulation.",
+            "default": 24
+          }
+        },
+        "type": "object",
+        "required": [
+          "simulation_name",
+          "modifications"
+        ],
+        "title": "SimulationRequest",
+        "examples": [
+          {
+            "duration_hours": 720,
+            "modifications": [
+              {
+                "capacity_increase": 100,
+                "efficiency_modifier": -10,
+                "energy_multiplier": 2.0,
+                "zone_name": "Paint Shop"
+              }
+            ],
+            "simulation_name": "Add second production line to Paint Shop"
+          },
+          {
+            "duration_hours": 168,
+            "modifications": [
+              {
+                "energy_multiplier": 0.9,
+                "temperature_offset": -10,
+                "zone_name": "Body Shop (BIW)"
+              }
+            ],
+            "simulation_name": "Reduce energy consumption in Body Shop"
+          }
+        ]
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "ZoneModification": {
+        "properties": {
+          "zone_name": {
+            "type": "string",
+            "title": "Zone Name",
+            "description": "Name of the manufacturing zone to modify. Valid zones: 'Stamping Shop', 'Body Shop (BIW)', 'Paint Shop', 'General Assembly', 'Powertrain Assembly', 'Quality Control', 'Logistics'",
+            "examples": [
+              "Paint Shop",
+              "Body Shop (BIW)",
+              "General Assembly"
+            ]
+          },
+          "temperature_offset": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Temperature Offset",
+            "description": "Temperature change in \u00b0C (e.g., -10 to reduce by 10\u00b0C, +5 to increase by 5\u00b0C)"
+          },
+          "efficiency_modifier": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Efficiency Modifier",
+            "description": "Efficiency percentage change (e.g., -5 for -5% efficiency, +3 for +3% efficiency)"
+          },
+          "energy_multiplier": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Energy Multiplier",
+            "description": "Energy usage multiplier as decimal (e.g., 1.5 for 50% increase, 0.8 for 20% reduction)"
+          },
+          "capacity_increase": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capacity Increase",
+            "description": "Production capacity increase as percentage (e.g., 50 for 50% increase when adding production lines, 100 for doubling capacity)"
+          },
+          "add_production_lines": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ProductionLine"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Add Production Lines",
+            "description": "Array of production lines to add to the zone"
+          },
+          "remove_line_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Remove Line Ids",
+            "description": "Array of line IDs to remove from the zone"
+          }
+        },
+        "type": "object",
+        "required": [
+          "zone_name"
+        ],
+        "title": "ZoneModification",
+        "examples": [
+          {
+            "capacity_increase": 50,
+            "efficiency_modifier": -10,
+            "energy_multiplier": 1.5,
+            "zone_name": "Paint Shop"
+          },
+          {
+            "efficiency_modifier": 3,
+            "temperature_offset": -5,
+            "zone_name": "Body Shop (BIW)"
+          },
+          {
+            "add_production_lines": [
+              {
+                "efficiency_modifier": -5,
+                "energy_multiplier": 1.0,
+                "line_id": "assembly-line-c",
+                "name": "Assembly Line C",
+                "production_capacity": 120
+              }
+            ],
+            "zone_name": "Assembly"
+          }
+        ]
+      },
+      "SimulationComparison": {
+        "properties": {
+          "baseline": {
+            "$ref": "#/components/schemas/SimulationMetrics"
+          },
+          "modified": {
+            "$ref": "#/components/schemas/SimulationMetrics"
+          },
+          "delta": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Delta"
+          },
+          "percent_change": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Percent Change"
+          }
+        },
+        "type": "object",
+        "required": [
+          "baseline",
+          "modified",
+          "delta",
+          "percent_change"
+        ],
+        "title": "SimulationComparison"
+      },
+      "ProductionLine": {
+        "properties": {
+          "line_id": {
+            "type": "string",
+            "title": "Line Id",
+            "description": "Unique identifier for the production line",
+            "examples": [
+              "line-002",
+              "paint-line-2"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Descriptive name for the production line",
+            "examples": [
+              "Paint Line 2",
+              "Assembly Line B"
+            ]
+          },
+          "energy_multiplier": {
+            "type": "number",
+            "title": "Energy Multiplier",
+            "description": "Energy usage multiplier (e.g., 1.5 = 50% more energy)",
+            "default": 1.0
+          },
+          "efficiency_modifier": {
+            "type": "number",
+            "title": "Efficiency Modifier",
+            "description": "Efficiency percentage modifier (e.g., -5 = -5% efficiency)",
+            "default": 0.0
+          },
+          "production_capacity": {
+            "type": "integer",
+            "title": "Production Capacity",
+            "description": "Production capacity in units per hour",
+            "default": 100
+          }
+        },
+        "type": "object",
+        "required": [
+          "line_id",
+          "name"
+        ],
+        "title": "ProductionLine",
+        "examples": [
+          {
+            "efficiency_modifier": -5.0,
+            "energy_multiplier": 1.0,
+            "line_id": "paint-line-2",
+            "name": "Paint Shop Line 2",
+            "production_capacity": 60
+          }
+        ]
+      },
+      "SimulationMetrics": {
+        "properties": {
+          "total_energy_kwh": {
+            "type": "number",
+            "title": "Total Energy Kwh"
+          },
+          "total_cost_usd": {
+            "type": "number",
+            "title": "Total Cost Usd"
+          },
+          "total_co2_kg": {
+            "type": "number",
+            "title": "Total Co2 Kg"
+          },
+          "avg_efficiency_pct": {
+            "type": "number",
+            "title": "Avg Efficiency Pct"
+          },
+          "total_production_units": {
+            "type": "integer",
+            "title": "Total Production Units"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_energy_kwh",
+          "total_cost_usd",
+          "total_co2_kg",
+          "avg_efficiency_pct",
+          "total_production_units"
+        ],
+        "title": "SimulationMetrics"
+      }
+    }
+  }
+}

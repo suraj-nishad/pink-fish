@@ -1,0 +1,48 @@
+.analytics-page {
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+
+  h1 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0.5rem 0 0 0;
+    color: var(--cds-text-secondary);
+  }
+}
+
+.coming-soon {
+  padding: 3rem;
+  text-align: center;
+
+  h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    margin-bottom: 1.5rem;
+    color: var(--cds-text-secondary);
+  }
+
+  ul {
+    text-align: left;
+    max-width: 600px;
+    margin: 0 auto;
+    
+    li {
+      margin: 0.75rem 0;
+      color: var(--cds-text-primary);
+    }
+  }
+}

@@ -1,0 +1,27 @@
+.header-title {
+  font-weight: 400;
+  margin-left: 0.75rem;
+  font-size: 1.125rem;
+  letter-spacing: 0;
+  color: #f4f4f4;
+}
+
+// Override Carbon header styles for better look
+:global {
+  .cds--header {
+    background: #262626;
+    border-bottom: 1px solid #393939;
+  }
+
+  .cds--header__name {
+    &:hover {
+      background: #2d2d2d;
+    }
+  }
+
+  .cds--header__menu-item {
+    &:hover {
+      background: #2d2d2d;
+    }
+  }
+}

@@ -201,11 +201,18 @@ class ConfigModel(BaseModel):
 # Helper Functions
 
 def load_current_status():
-    """Load current status from CSV file"""
+    """Load current status from CSV file - returns only the latest status for each zone"""
     try:
         df = pd.read_csv(CURRENT_STATUS_PATH)
+        
+        # Convert timestamp to datetime for proper sorting
+        df['timestamp'] = pd.to_datetime(df['timestamp'])
+        
+        # Get only the latest entry for each zone
+        latest_df = df.sort_values('timestamp').groupby('zone_id').tail(1)
+        
         zones = []
-        for _, row in df.iterrows():
+        for _, row in latest_df.iterrows():
             zones.append({
                 "id": row["zone_id"],
                 "name": row["zone"],  # Column is "zone" not "zone_name"
@@ -427,8 +434,6 @@ def analyze_energy(request: EnergyAnalysisRequest):
         hotspots = [a['zone'] for a in anomalies]
         
         # Build recommendations based on detected anomalies
-        # watsonx Orchestrate can call this endpoint and use the response
-        # to trigger additional workflows (e.g., create Jira tickets)
         recommendations = []
         for anomaly in anomalies:
             zone = anomaly['zone']
@@ -462,22 +467,50 @@ def analyze_energy(request: EnergyAnalysisRequest):
         ) * 24 * 30  # Monthly savings in kWh
         
         impact = {
-            "cost": round(total_energy_savings * CONFIG['COST_PER_KWH'], 2),
-            "co2": round(total_energy_savings * CONFIG['CO2_FACTOR'], 2),
-            "energy_kwh": round(total_energy_savings, 2)
+            "cost": round(total_energy_savings * CONFIG['COST_PER_KWH'], 2) if anomalies else 0.0,
+            "co2": round(total_energy_savings * CONFIG['CO2_FACTOR'], 2) if anomalies else 0.0,
+            "energy_kwh": round(total_energy_savings, 2) if anomalies else 0.0
         }
         
-        return EnergyAnalysisResponse(
-            hotspots=hotspots if hotspots else zones_to_analyze,
-            recommendations=recommendations if recommendations else [
+        # FIXED: If no anomalies detected, provide meaningful trend analysis instead of flagging all zones
+        if not hotspots:
+            # Calculate trend analysis for zones with normal operations
+            trend_analysis = []
+            for zone_name in zones_to_analyze:
+                zone_df = zone_data[zone_data['zone'] == zone_name].tail(24)  # Last 24 hours
+                if len(zone_df) > 0:
+                    current_avg = zone_df['energy_kwh'].mean()
+                    baseline = zone_df['energy_kwh'].median()
+                    trend_analysis.append({
+                        'zone': zone_name,
+                        'current_avg': current_avg,
+                        'baseline': baseline,
+                        'trend': 'stable'
+                    })
+            
+            # Create meaningful recommendations for normal operations
+            recommendations = [
                 RecommendationModel(
-                    zone=zones_to_analyze[0] if zones_to_analyze else "All Zones",
-                    action="Continue monitoring - no immediate issues detected",
+                    zone="All Zones",
+                    action="All zones operating within normal parameters",
                     priority="low",
                     estimated_savings=0.0,
-                    implementation="Maintain current operational parameters"
+                    implementation="Continue current monitoring schedule. Review energy efficiency opportunities during planned maintenance windows."
                 )
-            ],
+            ]
+            
+            # Return empty hotspots (not all zones)
+            return EnergyAnalysisResponse(
+                hotspots=[],
+                recommendations=recommendations,
+                impact=impact,
+                timestamp=datetime.utcnow().isoformat()
+            )
+        
+        # Return anomaly-based analysis
+        return EnergyAnalysisResponse(
+            hotspots=hotspots,
+            recommendations=recommendations,
             impact=impact,
             timestamp=datetime.utcnow().isoformat()
         )

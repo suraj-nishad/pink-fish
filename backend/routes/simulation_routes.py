@@ -105,8 +105,55 @@ class ZoneModification(BaseModel):
     efficiency_modifier: Optional[float] = Field(None, description="Efficiency percentage change (e.g., -5 for -5% efficiency, +3 for +3% efficiency)")
     energy_multiplier: Optional[float] = Field(None, description="Energy usage multiplier as decimal (e.g., 1.5 for 50% increase, 0.8 for 20% reduction)")
     capacity_increase: Optional[float] = Field(None, description="Production capacity increase as percentage (e.g., 50 for 50% increase when adding production lines, 100 for doubling capacity)")
-    add_production_lines: Optional[List[ProductionLine]] = Field(None, description="Array of production lines to add to the zone")
+    add_production_lines: Optional[Union[List[ProductionLine], int]] = Field(None, description="Array of production lines to add to the zone, OR an integer count of lines to add (will auto-generate line details)")
     remove_line_ids: Optional[List[str]] = Field(None, description="Array of line IDs to remove from the zone")
+    
+    @field_validator('add_production_lines', mode='before')
+    @classmethod
+    def normalize_production_lines(cls, v, info):
+        """
+        Handle watsonx agent sending integer instead of array:
+        - Integer (e.g., 1, 2) → auto-generate ProductionLine objects
+        - List of dicts/ProductionLine → use as-is
+        - None → no lines to add
+        """
+        if v is None:
+            return None
+        
+        # If integer, auto-generate production line objects
+        if isinstance(v, int):
+            # Get zone_name from the validation context
+            zone_name = info.data.get('zone_name', 'Unknown Zone')
+            
+            # Get base config for the zone
+            base_config = BASE_ZONES.get(zone_name, {
+                'base_energy': 500,
+                'production_capacity': 100
+            })
+            
+            lines = []
+            for i in range(abs(v)):
+                line_num = i + 2  # Line 1 is the base, so start from 2
+                line_id = f"{zone_name.lower().replace(' ', '_').replace('(', '').replace(')', '')}_line_{line_num}"
+                lines.append({
+                    'line_id': line_id,
+                    'name': f"{zone_name} Line {line_num}",
+                    'energy_multiplier': 1.0,  # Same energy as base line
+                    'efficiency_modifier': -5.0,  # Each additional line reduces efficiency by 5%
+                    'production_capacity': base_config.get('production_capacity', 100)
+                })
+            
+            return lines
+        
+        # If already a list, return as-is
+        if isinstance(v, list):
+            return v
+        
+        # If single dict, wrap in list
+        if isinstance(v, dict):
+            return [v]
+        
+        return v
     
     model_config = {
         "json_schema_extra": {
@@ -121,6 +168,10 @@ class ZoneModification(BaseModel):
                     "zone_name": "Body Shop (BIW)",
                     "temperature_offset": -5,
                     "efficiency_modifier": 3
+                },
+                {
+                    "zone_name": "Paint Shop",
+                    "add_production_lines": 1
                 },
                 {
                     "zone_name": "Assembly",
@@ -440,23 +491,27 @@ def calculate_zone_metrics(zone_config, hours, production_lines=None):
     # Base energy calculation
     base_energy_per_hour = zone_config['base_energy']
     
-    # Apply production line multipliers
-    line_multiplier = 1.0
+    # Calculate impact of additional production lines
+    # Base assumption: 1 baseline production line already exists
+    total_energy_multiplier = 1.0  # Baseline
     efficiency_total_modifier = 0.0
     capacity_total = zone_config['production_capacity']
     
-    if production_lines:
+    if production_lines and len(production_lines) > 0:
+        # Each additional production line adds energy and capacity
         for line in production_lines:
-            line_multiplier += (line['energy_multiplier'] - 1.0)
+            # Each line adds proportional energy (line_energy_multiplier is the energy for THAT line)
+            # If a line has energy_multiplier=1.0, it consumes same energy as base line
+            total_energy_multiplier += line['energy_multiplier']
             efficiency_total_modifier += line['efficiency_modifier']
             capacity_total += line['production_capacity']
     
     # Calculate total metrics
-    hourly_energy = base_energy_per_hour * line_multiplier
+    hourly_energy = base_energy_per_hour * total_energy_multiplier
     metrics['energy_kwh'] = hourly_energy * hours
     metrics['cost_usd'] = metrics['energy_kwh'] * 0.12
     metrics['co2_kg'] = metrics['energy_kwh'] * zone_config['co2_factor']
-    metrics['efficiency_pct'] = min(100, zone_config['base_efficiency'] + efficiency_total_modifier)
+    metrics['efficiency_pct'] = min(100, max(50, zone_config['base_efficiency'] + efficiency_total_modifier))
     metrics['production_units'] = int(capacity_total * hours * (metrics['efficiency_pct'] / 100))
     
     return metrics

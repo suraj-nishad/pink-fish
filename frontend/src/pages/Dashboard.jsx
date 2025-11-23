@@ -11,6 +11,7 @@ import { Dashboard as DashboardIcon, DataBase, Activity } from '@carbon/icons-re
 import ZoneCard from '../components/ZoneCard';
 import TrendsDrawer from '../components/TrendsDrawer';
 import axios from 'axios';
+import { API_ENDPOINTS } from '../config/api';
 import './Dashboard.scss';
 
 const Dashboard = () => {
@@ -38,7 +39,7 @@ const Dashboard = () => {
 
   const fetchZoneStatus = async () => {
     try {
-      const response = await axios.get('/api/zones/status');
+      const response = await axios.get(API_ENDPOINTS.ZONES_STATUS);
       setZones(response.data.zones);
       setPlantStatus({
         total: response.data.total_zones,
@@ -63,9 +64,7 @@ const Dashboard = () => {
     setHistoryError(null);
 
     try {
-      const response = await axios.get(`/api/zones/${activeZone.zone_id}/history`, {
-        params: { hours: parseInt(timeframe) }
-      });
+      const response = await axios.get(API_ENDPOINTS.ZONE_HISTORY(activeZone.zone_id, timeframe));
       // API returns object with history array in the 'history' property
       setHistoryData(response.data.history);
     } catch (err) {

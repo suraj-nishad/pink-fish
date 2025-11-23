@@ -168,6 +168,37 @@ class SimulationRequest(BaseModel):
         normalized = []
         for mod in v:
             if isinstance(mod, dict):
+                # Handle watsonx sending "production_lines" instead of "add_production_lines"
+                if 'production_lines' in mod and 'add_production_lines' not in mod:
+                    value = mod['production_lines']
+                    zone_name = mod.get('zone_name', '')
+                    
+                    # Convert production_lines to proper format
+                    normalized_mod = {'zone_name': zone_name}
+                    
+                    if isinstance(value, int):
+                        if value > 0:
+                            # Positive = add lines
+                            # Each line adds ~100% capacity (double, triple, etc.)
+                            capacity_pct = value * 100
+                            normalized_mod['capacity_increase'] = capacity_pct
+                            # Energy increases proportionally
+                            normalized_mod['energy_multiplier'] = 1.0 + value
+                            # Efficiency drops slightly with more lines (5% per line)
+                            normalized_mod['efficiency_modifier'] = -(value * 5.0)
+                        elif value < 0:
+                            # Negative = remove lines
+                            # Reduce capacity proportionally
+                            capacity_pct = value * 100  # e.g., -1 = -100%
+                            normalized_mod['capacity_increase'] = capacity_pct
+                            # Energy decreases proportionally
+                            normalized_mod['energy_multiplier'] = 1.0 + value  # e.g., -1 = 0.0 (no energy)
+                            # Efficiency might improve with fewer lines
+                            normalized_mod['efficiency_modifier'] = -(value * 5.0)  # e.g., -1 gives +5%
+                    
+                    normalized.append(normalized_mod)
+                    continue
+                
                 # Handle generic parameter/value format
                 if 'parameter' in mod and 'value' in mod:
                     param = mod['parameter'].lower()
